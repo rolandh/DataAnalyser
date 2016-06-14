@@ -1,6 +1,6 @@
 ﻿namespace DataAnalyser
 {
-    partial class MainForm
+    partial class XAxisMultiplierTextBox
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,9 @@
         private void InitializeComponent()
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.PlotTab = new System.Windows.Forms.TabPage();
+            this.UAxisMultiplier = new System.Windows.Forms.TextBox();
+            this.YAxisMultiplierTextBox = new System.Windows.Forms.TextBox();
             this.ChangeMainYAxisButton = new System.Windows.Forms.Button();
             this.ChangeMainXAxisButton = new System.Windows.Forms.Button();
             this.UComboBox = new System.Windows.Forms.ComboBox();
@@ -49,54 +51,92 @@
             this.minButton = new System.Windows.Forms.Button();
             this.SecondaryGridView = new System.Windows.Forms.DataGridView();
             this.MainGridView = new System.Windows.Forms.DataGridView();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.CalculateTab = new System.Windows.Forms.TabPage();
+            this.calculateAirmassButton = new System.Windows.Forms.Button();
+            this.hptTab = new System.Windows.Forms.TabPage();
             this.LoadButton = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.fordPCMHelper1 = new FordPCMEditor.FordPCMHelper();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.XAxisMultiplier = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.PlotTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SecondaryGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainGridView)).BeginInit();
-            this.tabPage2.SuspendLayout();
+            this.CalculateTab.SuspendLayout();
+            this.hptTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl1.Controls.Add(this.PlotTab);
+            this.tabControl1.Controls.Add(this.CalculateTab);
+            this.tabControl1.Controls.Add(this.hptTab);
             this.tabControl1.Location = new System.Drawing.Point(12, 40);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1544, 614);
+            this.tabControl1.Size = new System.Drawing.Size(1553, 619);
             this.tabControl1.TabIndex = 0;
             // 
-            // tabPage1
+            // PlotTab
             // 
-            this.tabPage1.Controls.Add(this.ChangeMainYAxisButton);
-            this.tabPage1.Controls.Add(this.ChangeMainXAxisButton);
-            this.tabPage1.Controls.Add(this.UComboBox);
-            this.tabPage1.Controls.Add(this.label2);
-            this.tabPage1.Controls.Add(this.zAxisComboBox);
-            this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Controls.Add(this.button1);
-            this.tabPage1.Controls.Add(this.yAxisComboBox);
-            this.tabPage1.Controls.Add(this.xAxisComboBox);
-            this.tabPage1.Controls.Add(this.labelYAxis);
-            this.tabPage1.Controls.Add(this.labelXAxis);
-            this.tabPage1.Controls.Add(this.checkPulseButton);
-            this.tabPage1.Controls.Add(this.averageButton);
-            this.tabPage1.Controls.Add(this.SDButton);
-            this.tabPage1.Controls.Add(this.countButton);
-            this.tabPage1.Controls.Add(this.maxButton);
-            this.tabPage1.Controls.Add(this.minButton);
-            this.tabPage1.Controls.Add(this.SecondaryGridView);
-            this.tabPage1.Controls.Add(this.MainGridView);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1536, 588);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "3D Plot View";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.PlotTab.Controls.Add(this.label7);
+            this.PlotTab.Controls.Add(this.label6);
+            this.PlotTab.Controls.Add(this.XAxisMultiplier);
+            this.PlotTab.Controls.Add(this.label5);
+            this.PlotTab.Controls.Add(this.textBox1);
+            this.PlotTab.Controls.Add(this.label4);
+            this.PlotTab.Controls.Add(this.UAxisMultiplier);
+            this.PlotTab.Controls.Add(this.YAxisMultiplierTextBox);
+            this.PlotTab.Controls.Add(this.ChangeMainYAxisButton);
+            this.PlotTab.Controls.Add(this.ChangeMainXAxisButton);
+            this.PlotTab.Controls.Add(this.UComboBox);
+            this.PlotTab.Controls.Add(this.label2);
+            this.PlotTab.Controls.Add(this.zAxisComboBox);
+            this.PlotTab.Controls.Add(this.label1);
+            this.PlotTab.Controls.Add(this.button1);
+            this.PlotTab.Controls.Add(this.yAxisComboBox);
+            this.PlotTab.Controls.Add(this.xAxisComboBox);
+            this.PlotTab.Controls.Add(this.labelYAxis);
+            this.PlotTab.Controls.Add(this.labelXAxis);
+            this.PlotTab.Controls.Add(this.checkPulseButton);
+            this.PlotTab.Controls.Add(this.averageButton);
+            this.PlotTab.Controls.Add(this.SDButton);
+            this.PlotTab.Controls.Add(this.countButton);
+            this.PlotTab.Controls.Add(this.maxButton);
+            this.PlotTab.Controls.Add(this.minButton);
+            this.PlotTab.Controls.Add(this.SecondaryGridView);
+            this.PlotTab.Controls.Add(this.MainGridView);
+            this.PlotTab.Location = new System.Drawing.Point(4, 22);
+            this.PlotTab.Name = "PlotTab";
+            this.PlotTab.Padding = new System.Windows.Forms.Padding(3);
+            this.PlotTab.Size = new System.Drawing.Size(1545, 593);
+            this.PlotTab.TabIndex = 0;
+            this.PlotTab.Text = "3D Plot View";
+            this.PlotTab.UseVisualStyleBackColor = true;
+            // 
+            // UAxisMultiplier
+            // 
+            this.UAxisMultiplier.Location = new System.Drawing.Point(968, 82);
+            this.UAxisMultiplier.Name = "UAxisMultiplier";
+            this.UAxisMultiplier.Size = new System.Drawing.Size(100, 20);
+            this.UAxisMultiplier.TabIndex = 24;
+            this.UAxisMultiplier.Text = "1.0";
+            // 
+            // YAxisMultiplierTextBox
+            // 
+            this.YAxisMultiplierTextBox.Location = new System.Drawing.Point(378, 78);
+            this.YAxisMultiplierTextBox.Name = "YAxisMultiplierTextBox";
+            this.YAxisMultiplierTextBox.Size = new System.Drawing.Size(100, 20);
+            this.YAxisMultiplierTextBox.TabIndex = 23;
+            this.YAxisMultiplierTextBox.Text = "1.0";
             // 
             // ChangeMainYAxisButton
             // 
@@ -121,15 +161,16 @@
             // UComboBox
             // 
             this.UComboBox.FormattingEnabled = true;
-            this.UComboBox.Location = new System.Drawing.Point(876, 111);
+            this.UComboBox.Location = new System.Drawing.Point(885, 52);
             this.UComboBox.Name = "UComboBox";
             this.UComboBox.Size = new System.Drawing.Size(280, 21);
             this.UComboBox.TabIndex = 19;
+            this.UComboBox.DragLeave += new System.EventHandler(this.UComboBox_DragLeave);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(873, 95);
+            this.label2.Location = new System.Drawing.Point(882, 36);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(45, 13);
             this.label2.TabIndex = 18;
@@ -154,7 +195,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(876, 50);
+            this.button1.Location = new System.Drawing.Point(795, 6);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 15;
@@ -200,11 +241,11 @@
             // 
             // checkPulseButton
             // 
-            this.checkPulseButton.Location = new System.Drawing.Point(1162, 109);
+            this.checkPulseButton.Location = new System.Drawing.Point(885, 108);
             this.checkPulseButton.Name = "checkPulseButton";
-            this.checkPulseButton.Size = new System.Drawing.Size(152, 23);
+            this.checkPulseButton.Size = new System.Drawing.Size(262, 23);
             this.checkPulseButton.TabIndex = 8;
-            this.checkPulseButton.Text = "View Cell vs U";
+            this.checkPulseButton.Text = "View Selected Cell vs U";
             this.checkPulseButton.UseVisualStyleBackColor = true;
             this.checkPulseButton.Click += new System.EventHandler(this.checkPulseButton_Click);
             // 
@@ -260,70 +301,158 @@
             // 
             // SecondaryGridView
             // 
+            this.SecondaryGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.SecondaryGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.SecondaryGridView.Location = new System.Drawing.Point(876, 138);
+            this.SecondaryGridView.Location = new System.Drawing.Point(885, 138);
             this.SecondaryGridView.Name = "SecondaryGridView";
-            this.SecondaryGridView.Size = new System.Drawing.Size(654, 444);
+            this.SecondaryGridView.Size = new System.Drawing.Size(654, 449);
             this.SecondaryGridView.TabIndex = 2;
             this.SecondaryGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.SecondaryGridView_ColumnHeaderMouseClick);
             this.SecondaryGridView.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.SecondaryGridView_RowHeaderMouseClick);
             // 
             // MainGridView
             // 
+            this.MainGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.MainGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.MainGridView.Location = new System.Drawing.Point(5, 138);
             this.MainGridView.Name = "MainGridView";
-            this.MainGridView.Size = new System.Drawing.Size(865, 444);
+            this.MainGridView.Size = new System.Drawing.Size(865, 449);
             this.MainGridView.TabIndex = 1;
             this.MainGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_ColumnHeaderMouseClick);
             this.MainGridView.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_RowHeaderMouseClick);
             // 
-            // tabPage2
+            // CalculateTab
             // 
-            this.tabPage2.Controls.Add(this.button2);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1536, 588);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Recalc SD Maps (future)";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.CalculateTab.Controls.Add(this.label3);
+            this.CalculateTab.Controls.Add(this.calculateAirmassButton);
+            this.CalculateTab.Location = new System.Drawing.Point(4, 22);
+            this.CalculateTab.Name = "CalculateTab";
+            this.CalculateTab.Size = new System.Drawing.Size(1545, 593);
+            this.CalculateTab.TabIndex = 2;
+            this.CalculateTab.Text = "Calculate Variables";
+            this.CalculateTab.UseVisualStyleBackColor = true;
+            // 
+            // calculateAirmassButton
+            // 
+            this.calculateAirmassButton.Location = new System.Drawing.Point(16, 85);
+            this.calculateAirmassButton.Name = "calculateAirmassButton";
+            this.calculateAirmassButton.Size = new System.Drawing.Size(106, 23);
+            this.calculateAirmassButton.TabIndex = 2;
+            this.calculateAirmassButton.Text = "Calculate Airmass";
+            this.calculateAirmassButton.UseVisualStyleBackColor = true;
+            this.calculateAirmassButton.Click += new System.EventHandler(this.calculateAirmassButton_Click);
+            // 
+            // hptTab
+            // 
+            this.hptTab.Controls.Add(this.fordPCMHelper1);
+            this.hptTab.Location = new System.Drawing.Point(4, 22);
+            this.hptTab.Name = "hptTab";
+            this.hptTab.Padding = new System.Windows.Forms.Padding(3);
+            this.hptTab.Size = new System.Drawing.Size(1545, 593);
+            this.hptTab.TabIndex = 1;
+            this.hptTab.Text = "HPT File Viewer";
+            this.hptTab.UseVisualStyleBackColor = true;
             // 
             // LoadButton
             // 
             this.LoadButton.Location = new System.Drawing.Point(12, 11);
             this.LoadButton.Name = "LoadButton";
-            this.LoadButton.Size = new System.Drawing.Size(75, 23);
+            this.LoadButton.Size = new System.Drawing.Size(106, 23);
             this.LoadButton.TabIndex = 1;
-            this.LoadButton.Text = "Load Data";
+            this.LoadButton.Text = "Load CSV Data";
             this.LoadButton.UseVisualStyleBackColor = true;
             this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
-            // button2
+            // fordPCMHelper1
             // 
-            this.button2.Location = new System.Drawing.Point(6, 6);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(122, 23);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "Load HPT File";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.fordPCMHelper1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.fordPCMHelper1.Location = new System.Drawing.Point(6, 0);
+            this.fordPCMHelper1.Name = "fordPCMHelper1";
+            this.fordPCMHelper1.Size = new System.Drawing.Size(1543, 587);
+            this.fordPCMHelper1.TabIndex = 0;
             // 
-            // MainForm
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(16, 14);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(35, 13);
+            this.label3.TabIndex = 3;
+            this.label3.Text = "label3";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(292, 81);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(80, 13);
+            this.label4.TabIndex = 25;
+            this.label4.Text = "Y Axis Multiplier";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(587, 85);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(80, 13);
+            this.label5.TabIndex = 27;
+            this.label5.Text = "X Axis Multiplier";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(673, 82);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 26;
+            this.textBox1.Text = "1.0";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 81);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(80, 13);
+            this.label6.TabIndex = 29;
+            this.label6.Text = "Y Axis Multiplier";
+            // 
+            // XAxisMultiplier
+            // 
+            this.XAxisMultiplier.Location = new System.Drawing.Point(92, 78);
+            this.XAxisMultiplier.Name = "XAxisMultiplier";
+            this.XAxisMultiplier.Size = new System.Drawing.Size(100, 20);
+            this.XAxisMultiplier.TabIndex = 28;
+            this.XAxisMultiplier.Text = "1.0";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(882, 85);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(80, 13);
+            this.label7.TabIndex = 30;
+            this.label7.Text = "X Axis Multiplier";
+            // 
+            // XAxisMultiplierTextBox
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1568, 680);
             this.Controls.Add(this.LoadButton);
             this.Controls.Add(this.tabControl1);
-            this.Name = "MainForm";
+            this.Name = "XAxisMultiplierTextBox";
             this.Text = "DataAnalyser";
             this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.PlotTab.ResumeLayout(false);
+            this.PlotTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SecondaryGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainGridView)).EndInit();
-            this.tabPage2.ResumeLayout(false);
+            this.CalculateTab.ResumeLayout(false);
+            this.CalculateTab.PerformLayout();
+            this.hptTab.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -331,9 +460,8 @@
         #endregion
 
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button LoadButton;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage PlotTab;
         private System.Windows.Forms.ComboBox yAxisComboBox;
         private System.Windows.Forms.ComboBox xAxisComboBox;
         private System.Windows.Forms.Label labelYAxis;
@@ -353,7 +481,20 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button ChangeMainXAxisButton;
         private System.Windows.Forms.Button ChangeMainYAxisButton;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TabPage hptTab;
+        private FordPCMEditor.FordPCMHelper fordPCMHelper;
+        private System.Windows.Forms.TabPage CalculateTab;
+        private System.Windows.Forms.Button calculateAirmassButton;
+        private System.Windows.Forms.TextBox YAxisMultiplierTextBox;
+        private System.Windows.Forms.TextBox UAxisMultiplier;
+        private FordPCMEditor.FordPCMHelper fordPCMHelper1;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox XAxisMultiplier;
     }
 }
 

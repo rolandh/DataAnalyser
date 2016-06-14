@@ -9,7 +9,7 @@ using System.IO;
 
 namespace DataAnalyser
 {
-    public partial class MainForm : Form
+    public partial class XAxisMultiplierTextBox : Form
     {
         string[] csvHeaders;
         double[,] csvData;
@@ -23,7 +23,7 @@ namespace DataAnalyser
         List<Double[]>[,] MainGridViewData;
         int[,] SecondaryGridViewData;
 
-        public MainForm()
+        public XAxisMultiplierTextBox()
         {
             InitializeComponent();
         }
@@ -233,6 +233,25 @@ namespace DataAnalyser
             MainGridViewData = new List<double[]>[MainGridViewxValues.Length, MainGridViewyValues.Length];
             for (i = 0; i < MainGridView.Columns.Count; i++) for (int j = 0; j < MainGridViewyValues.Length; j++) MainGridViewData[i, j] = new List<double[]>();
 
+            double uMult = 1.0;
+            double yMult = 1.0;
+
+            try {
+                uMult = Convert.ToDouble(UAxisMultiplier.Text);
+            } catch (Exception)
+            {
+                uMult = 1.0;
+            }
+
+            try
+            {
+                yMult = Convert.ToDouble(YAxisMultiplierTextBox.Text);
+            }
+            catch (Exception)
+            {
+                yMult = 1.0;
+            }
+
             //Iterate each time sample and add it to the appropriate x,y list
             int numberOfSamples = csvData.GetLength(0);
             double minZ = double.MaxValue;
@@ -241,7 +260,7 @@ namespace DataAnalyser
             for (i = 0; i < numberOfSamples; i++)
             {
                 double x = csvData[i, xIndex];
-                double y = csvData[i, yIndex];
+                double y = csvData[i, yIndex] * yMult;
                 double z = csvData[i, zIndex];
                 double v = csvData[i, vIndex];
 
@@ -249,7 +268,7 @@ namespace DataAnalyser
                 int[] coordinates = GetNearestCoordinate(x, y, MainGridViewxValues, MainGridViewyValues);
                 double[] cell = new double[2];
                 cell[0] = z;
-                //cell[1] = v * 1000.0;
+                cell[1] = v * uMult;
                 cell[1] = v;
                 MainGridViewData[coordinates[0], coordinates[1]].Add(cell);
             }
@@ -279,17 +298,17 @@ namespace DataAnalyser
                 row.HeaderCell.Value = MainGridViewyValues[i].ToString();
                 for (int j = 0; j < MainGridViewxValues.Length; j++)
                 {
-                    double[] fuelTrimArray = new double[MainGridViewData[j, i].Count];
-                    double[] injPulseArray = new double[MainGridViewData[j, i].Count];
+                    double[] primaryArray = new double[MainGridViewData[j, i].Count];
+                    double[] secondaryArray = new double[MainGridViewData[j, i].Count];
 
-                    for (int k = 0; k < fuelTrimArray.Length; k++)
+                    for (int k = 0; k < primaryArray.Length; k++)
                     {
-                        fuelTrimArray[k] = MainGridViewData[j, i][k][0];
-                        injPulseArray[k] = MainGridViewData[j, i][k][1];
+                        primaryArray[k] = MainGridViewData[j, i][k][0];
+                        secondaryArray[k] = MainGridViewData[j, i][k][1];
                     }
 
 
-                    DataGridViewTuningCell cell = new DataGridViewTuningCell(injPulseArray, fuelTrimArray, range, minZ);
+                    DataGridViewTuningCell cell = new DataGridViewTuningCell(secondaryArray, primaryArray, range, minZ);
 
                     row.Cells.Add(cell);
                 }
@@ -796,15 +815,251 @@ namespace DataAnalyser
             return Color.FromArgb((byte)(r * 255.0), (byte)(g * 255.0), (byte)(b * 255.0));
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void calculateAirmassButton_Click(object sender, EventArgs e)
         {
-            var openFileDialog = new OpenFileDialog();
-            DialogResult result = openFileDialog.ShowDialog();
-            if (result != DialogResult.OK) return;
-            if (!File.Exists(openFileDialog.FileName)) return;
+            if (fordPCMHelper != null)
+            {
+                if (fordPCMHelper.fileLoaded)
+                {
+                    int indexOfPulse,indexOfCalculatedLoad, indexOfMAP, indexOfTPS, indexOfCamAngle, indexOfRPM, indexOfMapPerAirmass, indexOfMapPerZeroAirmass, indexOfAirMass, indexOfFuelMass, indexOfCalculatedInjectorPW, indexOfCalculatedAFR;
 
-            FordPCMEditor.FordPCMHelper editor = new FordPCMEditor.FordPCMHelper(openFileDialog.FileName);
-            editor.Show();
+
+                    indexOfCamAngle = Array.FindIndex(csvHeaders, x => (x.IndexOf("cam angle", StringComparison.OrdinalIgnoreCase) >= 0));
+                    indexOfRPM = Array.FindIndex(csvHeaders, x => (x.IndexOf("rpm", StringComparison.OrdinalIgnoreCase) >= 0));
+                    indexOfTPS = Array.FindIndex(csvHeaders, x => (x.IndexOf("ETC throttle", StringComparison.OrdinalIgnoreCase) >= 0));
+                    indexOfMAP = Array.FindIndex(csvHeaders, x => (x.IndexOf("MANIFOLD ABSOLUTE PRESSURE", StringComparison.OrdinalIgnoreCase) >= 0));
+                    indexOfPulse = Array.FindIndex(csvHeaders, x => (x.IndexOf("FUEL PULSEWIDTH", StringComparison.OrdinalIgnoreCase) >= 0));
+
+                    
+
+                    if (indexOfMAP == -1)
+                    {
+                        MessageBox.Show("Couldn't find MAP entry in csv data!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    if (indexOfCamAngle == -1)
+                    {
+                        MessageBox.Show("Couldn't find cam angle entry in csv data!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    if (indexOfRPM == -1)
+                    {
+                        MessageBox.Show("Couldn't find rpm entry in csv data!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    if (indexOfTPS == -1)
+                    {
+                        MessageBox.Show("Couldn't find TPS entry in csv data, we will assume commanded lambda is always 1.0", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                        return;
+                    }
+
+                    indexOfMapPerAirmass = Array.IndexOf(csvHeaders, "Map per Airmass");
+                    indexOfMapPerZeroAirmass = Array.IndexOf(csvHeaders, "Map per Zero Airmass");
+                    indexOfAirMass = Array.IndexOf(csvHeaders, "Calculated Airmass");
+                    indexOfFuelMass = Array.IndexOf(csvHeaders, "Calculated Fuel Mass");
+                    indexOfCalculatedInjectorPW = Array.IndexOf(csvHeaders, "Calculated Injector Pulsewidth");
+                    indexOfCalculatedAFR = Array.IndexOf(csvHeaders, "Calculated Commanded AFR");
+                    indexOfCalculatedLoad = Array.IndexOf(csvHeaders, "Calculated Load");
+
+                    int arrayResizeAmount = 0;
+                    if (indexOfMapPerAirmass == -1)
+                    {
+                        indexOfMapPerAirmass = csvHeaders.Length;
+                        arrayResizeAmount++;
+                    }
+
+                    if (indexOfMapPerZeroAirmass == -1)
+                    {
+                        indexOfMapPerZeroAirmass = csvHeaders.Length + arrayResizeAmount;
+                        arrayResizeAmount++;
+                    }
+                    if (indexOfAirMass == -1)
+                    {
+                        indexOfAirMass = csvHeaders.Length + arrayResizeAmount;
+                        arrayResizeAmount++;
+                    }
+                    if (indexOfFuelMass == -1)
+                    {
+                        indexOfFuelMass = csvHeaders.Length + arrayResizeAmount;
+                        arrayResizeAmount++;
+                    }
+                    if (indexOfCalculatedInjectorPW == -1)
+                    {
+                        indexOfCalculatedInjectorPW = csvHeaders.Length + arrayResizeAmount;
+                        arrayResizeAmount++;
+                    }
+                    if (indexOfCalculatedAFR == -1)
+                    {
+                        indexOfCalculatedAFR = csvHeaders.Length + arrayResizeAmount;
+                        arrayResizeAmount++;
+                    }
+                    if (indexOfCalculatedLoad == -1)
+                    {
+                        indexOfCalculatedLoad = csvHeaders.Length + arrayResizeAmount;
+                        arrayResizeAmount++;
+                    }
+
+
+                    //Create new arrays with 3 extra values,
+                    string[] newCsvHeaders = new string[csvHeaders.Length + arrayResizeAmount];
+                    double[,] newCsvData = new double[csvData.GetLength(0), csvData.GetLength(1)+ arrayResizeAmount];
+
+                    //Copy the previous data
+                    Array.Copy(csvHeaders, newCsvHeaders, csvHeaders.Length);
+                    Array.Copy(csvData, newCsvData, csvData.Length);
+
+                    //Add the new headers
+                    newCsvHeaders[indexOfMapPerAirmass] = "Map per Airmass";
+                    newCsvHeaders[indexOfMapPerZeroAirmass] = "Map per Zero Airmass";
+                    newCsvHeaders[indexOfAirMass] = "Calculated Airmass";
+                    newCsvHeaders[indexOfFuelMass] = "Calculated Fuel Mass";
+                    newCsvHeaders[indexOfCalculatedInjectorPW] = "Calculated Injector Pulsewidth";
+                    newCsvHeaders[indexOfCalculatedAFR] = "Calculated Commanded AFR";
+                    newCsvHeaders[indexOfCalculatedLoad] = "Calculated Load";
+
+                    //get stoich
+                    double stoichAFR;
+                    if(!fordPCMHelper.TryGetDouble(2300, out stoichAFR))
+                    {
+                        MessageBox.Show("Couldn't read Stoich AFR value (2300), we will assume 14.64", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                        stoichAFR = 14.64;
+                    }
+
+                    Boolean calculatePulseWidth = true;
+
+                    //get low slope
+                    double lowSlope;
+                    if (!fordPCMHelper.TryGetDouble(12010, out lowSlope))
+                    {
+                        MessageBox.Show("Couldn't read Injector Low Slope (12010), we will not be able to calculate pulse width!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                        calculatePulseWidth = false;
+                    }
+                    lowSlope /= 3600.0;
+
+                    //get high slope
+                    double highSlope;
+                    if (!fordPCMHelper.TryGetDouble(12011, out highSlope))
+                    {
+                        MessageBox.Show("Couldn't read Injector High Slope (12010), we will not be able to calculate pulse width!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                        calculatePulseWidth = false;
+                    }
+                    highSlope /= 3600.0;
+
+                    //get offset
+                    double breakpoint;
+                    if (!fordPCMHelper.TryGetDouble(12012, out breakpoint))
+                    {
+                        MessageBox.Show("Couldn't read Injector breakpoint (12012), we will not be able to calculate pulse width!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                        calculatePulseWidth = false;
+                    }
+
+                    //get offset
+                    double offset;
+                    if (!fordPCMHelper.TryGetDouble(32050, out offset))
+                    {
+                        MessageBox.Show("Couldn't read Injector offset at 12.0V (32050), we will not be able to calculate pulse width!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                        //calculatePulseWidth = false;
+                        offset = 0.00146499997936189;
+                    }
+
+
+                    double displacement;
+                    if (!fordPCMHelper.TryGetDouble(50000, out displacement))
+                    {
+                        MessageBox.Show("Couldn't read engine displacement (50000), we will assume 4.0L (0.00172 lb)", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                        displacement = 0.00172;
+                    }
+
+                    Boolean lambdaErrorIssued = false;
+
+                    //Calculate the new values
+                    for(int i = 0; i < csvData.GetLength(0); i++)
+                    {
+                        double camAngle = csvData[i, indexOfCamAngle];
+                        double rpm = csvData[i,indexOfRPM];
+                        double map = csvData[i, indexOfMAP];
+                        double pulse = csvData[i, indexOfPulse];
+                        double TPS = -1.0;
+                        double commandedLambda = 1.0;
+
+                        //Get the commanded lambda value
+                        if(indexOfTPS != -1)
+                        {
+                            TPS = csvData[i, indexOfTPS];
+                            if (!fordPCMHelper.TryGetTableValue(rpm, TPS, 50151, out commandedLambda))
+                            {
+                                if (!lambdaErrorIssued) MessageBox.Show(String.Format("Failed to get commanded lambda for {0}rpm {1}TPS%, we will use 1.0 from now on and no longer report anymore errors of this type", rpm, TPS));
+                                lambdaErrorIssued = true;
+                                commandedLambda = 1.0;
+                            }
+                        }
+
+                        //interpolate the map per airmass values
+                        double mapPerAirmass;
+                        double mapPerZeroAirmass;
+                        if(!fordPCMHelper.TryGetTableValue(rpm, camAngle, 50051, out mapPerZeroAirmass))
+                        {
+                            MessageBox.Show(String.Format("Failed to get Map per Zero Airmass for {0}rpm {1} Cam Angle, this is a fatal error, giving up, sorry bro", rpm, camAngle));
+                            return;
+                        }
+                        if (!fordPCMHelper.TryGetTableValue(rpm, camAngle, 50055, out mapPerAirmass))
+                        {
+                            MessageBox.Show(String.Format("Failed to get Map per Airmass for {0}rpm {1} Cam Angle, this is a fatal error, giving up, sorry bro", rpm, camAngle));
+                            return;
+                        }
+
+                        //Calculate the airmass
+                        double airMassLbs = (map - mapPerZeroAirmass) / mapPerAirmass;
+                        newCsvData[i,indexOfAirMass] = airMassLbs;
+
+                        //Calculate the load
+                        newCsvData[i, indexOfCalculatedLoad] = airMassLbs / displacement;
+
+                        //Calculate the fuelmass
+                        double fuelMass = airMassLbs / (stoichAFR * commandedLambda);
+                        newCsvData[i, indexOfFuelMass] = fuelMass;
+
+
+                        //Calculate the pulse width
+                        double pulseWidth;
+                        //When below the breakpoint
+                        //fuelmass=low*(ms-offset)
+                        //ms=(fuelmass/low)+offset
+                        if (fuelMass <= breakpoint)
+                        {
+                            pulseWidth = (fuelMass / lowSlope) + offset;
+                        }
+                        else
+                        {
+                            //fuelmass=high*(ms-(breakpoint*((1/low)-(1/high))+offset))
+                            //ms=(breakpoint*((1/low)-(1/high))+(fuelmass/highslope)+offset
+                            pulseWidth = (breakpoint * ((1 / lowSlope) - (1 / highSlope))) + (fuelMass / highSlope) + offset;
+                        }
+
+                        double pulseWidthMs = (pulseWidth-offset) * 1000.0 ;
+                        double actualPulse = (pulse) * 1000.0;
+                        newCsvData[i, indexOfCalculatedInjectorPW] = pulseWidth;
+
+                        if(rpm > 4500)
+                        {
+                            int lol = 1;
+                        }
+
+                    }
+
+                    return;
+                } 
+            }
+
+            MessageBox.Show("You must load a .HPT file first!");
+        }
+
+        private void UComboBox_DragLeave(object sender, EventArgs e)
+        {
+
         }
     }
 }
