@@ -4,8 +4,9 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using FordPCMEditor;
+//using FordPCMEditor;
 using System.IO;
+using JR.Utils.GUI.Forms;
 
 namespace DataAnalyser
 {
@@ -54,6 +55,12 @@ namespace DataAnalyser
             if(!String.IsNullOrEmpty(xAxisComboBox.Text) && !String.IsNullOrEmpty(yAxisComboBox.Text) && !String.IsNullOrEmpty(zAxisComboBox.Text))
             {
                 PopulateMainGridView(xAxisComboBox.Text, yAxisComboBox.Text, zAxisComboBox.Text, UComboBox.Text);
+            } else
+            {
+                //Clear the gridview then
+                SecondaryGridView.Rows.Clear();
+                SecondaryGridView.Columns.Clear();
+                MainGridView.Rows.Clear();
             }
             
         }
@@ -67,6 +74,7 @@ namespace DataAnalyser
             double val = data.data.Min();
             double range = data.data.Max() - val;
             int numberOfCells = Math.Min(10, data.data.Length);
+
             for (int x = 0; x < numberOfCells; x++) {
                 columns.Add(String.Format("{0:0.00}", val));
                 val += range / (double)numberOfCells;
@@ -230,7 +238,7 @@ namespace DataAnalyser
             //We couldn't find the indexs
             if (yIndex == -1 || xIndex == -1 || zIndex == -1 || vIndex == -1)
             {
-                MessageBox.Show("Error: Couldn't find index in file", "Error");
+                MessageBox.Show("Error: Couldn't find X/Y/Z index in file", "Error");
                 return;
             }
 
@@ -288,6 +296,9 @@ namespace DataAnalyser
                 double z = csvData[i, zIndex] * zMult;
                 double u = csvData[i, vIndex] * uMult;
 
+                //Skip the entry if it is invalid
+                if (!IsValidDouble(x) || !IsValidDouble(y) || !IsValidDouble(z)) continue;
+
                 if (z < minZ) minZ = z;
                 int[] coordinates = GetNearestCoordinate(x, y, MainGridViewxValues, MainGridViewyValues);
                 double[] cell = new double[2];
@@ -342,12 +353,26 @@ namespace DataAnalyser
             MainGridView.RowHeadersWidth = 60;
         }
 
+        public static bool IsValidDouble(double value)
+        {
+            if (value == double.NaN || double.IsInfinity(value)) return false;
+            return true;
+        }
+
         public class DataGridViewTuningColumn : DataGridViewTextBoxColumn
         {
             public DataGridViewTuningColumn()
             {
                 this.CellTemplate = new DataGridViewTuningCell();
             }
+        }
+
+        public static double[] ConditionData(double[] unconditionedData)
+        {
+            List<double> conditionedData = new List<double>();
+            foreach(double value in unconditionedData) if (IsValidDouble(value)) conditionedData.Add(value);
+
+            return conditionedData.ToArray();
         }
 
         public class DataGridViewTuningCell : DataGridViewTextBoxCell
@@ -370,10 +395,10 @@ namespace DataAnalyser
             {
             }
 
-            public DataGridViewTuningCell(double [] fuelTrimDataArray, double [] doubleArray, double range, double offset, DataGridViewTuningCellFormat format = DataGridViewTuningCellFormat.Average)
+            public DataGridViewTuningCell(double [] secondaryDataInput, double [] doubleArray, double range, double offset, DataGridViewTuningCellFormat format = DataGridViewTuningCellFormat.Average)
             {
-                this.data = doubleArray;
-                this.secondaryData = fuelTrimDataArray;
+                this.data = ConditionData(doubleArray);
+                this.secondaryData = ConditionData(secondaryDataInput);
                 this.range = range;
                 this.offset = offset;
                 this.count = doubleArray.Length;
@@ -416,7 +441,7 @@ namespace DataAnalyser
                 else if (newFormat == DataGridViewTuningCellFormat.StandardDeviation) dataVal = standardDeviation;
                 else if (newFormat == DataGridViewTuningCellFormat.Count) dataVal = count;
 
-                if (!double.IsNaN(dataVal) && !double.IsPositiveInfinity(dataVal) && !double.IsNegativeInfinity(dataVal) && !double.IsInfinity(dataVal))
+                if (IsValidDouble(dataVal))
                 {
                     this.Value = String.Format("{0:0.00}", dataVal);
 
@@ -472,31 +497,94 @@ namespace DataAnalyser
             // Get the file's text.
             try {
                 string whole_file = System.IO.File.ReadAllText(filename);
+
                 // Split into lines.
                 whole_file = whole_file.Replace('\n', '\r');
                 string[] lines = whole_file.Split(new char[] { '\r' },
                     StringSplitOptions.RemoveEmptyEntries);
 
+                //Check if empty
+                if(lines.Length < 2)
+                {
+                    MessageBox.Show("CSV file requires at least one entry", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(lines[0])){
+                    MessageBox.Show("CSV file missing header", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                int headerRow = 0;
+                int firstDataRow = 1;
+                if(lines[0].Contains("HP Tuners CSV Log File"))
+                {
+                    //We have a HPL file
+                    for (int i = 0; i < lines.Length; i++) {
+                        if (lines[i].Equals("[Channel Data]"))
+                        {
+                            firstDataRow = i + 1;
+                        }
+                        if (lines[i].Equals("[Channel Information]"))
+                        {
+                            headerRow = i + 2;
+                        }
+                        if (firstDataRow != 1 && headerRow != 0) break;
+
+                        if (i == lines.Length - 2)
+                        {
+                            MessageBox.Show("Could not find [Channel Data] Or [Channel Information] within HPT CSV log file, giving up.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return false;
+                        }
+                    }
+
+                } 
+
                 // See how many rows and columns there are.
-                int num_rows = lines.Length;
-                int num_cols = lines[0].Split(',').Length;
+                int num_rows = lines.Length - firstDataRow -1;
+                int num_cols = lines[headerRow].Split(',').Length;
 
                 // Allocate the data array.
                 csvHeaders = new string[num_cols];
                 csvData = new double[num_rows - 1, num_cols];
 
                 // Load the array.
-                for (int r = 0; r < (num_rows); r++)
+
+                string[] headerLine = lines[headerRow].Split(',');
+                if(headerLine.Length < 3)
+                {
+                    MessageBox.Show("Not enough headers in CSV file! Need at least three, possibly wrong file format? I'm giving up, sorry bro.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+
+                csvHeaders = headerLine;
+
+                for (int r = firstDataRow; r < (num_rows); r++)
                 {
                     string[] line_r = lines[r].Split(',');
                     for (int c = 0; c < num_cols; c++)
                     {
-                        if (r == 0) csvHeaders[c] = line_r[c];
-                        else csvData[r - 1, c] = Convert.ToDouble(line_r[c]);
+                        double result;
+                        if (String.IsNullOrEmpty(line_r[c])) continue;
+                        if (Double.TryParse(line_r[c], out result))
+                        {
+                            csvData[r - 1, c] = result;
+                        }
+                        else
+                        {
+                            csvData[r - 1, c] = double.NaN;
+                        }
                     }
                 }
+
+
                 xAxisComboBox.Items.Clear();
                 yAxisComboBox.Items.Clear();
+                UComboBox.Items.Clear();
+                xAxisComboBox.Text = "";
+                yAxisComboBox.Text = "";
+                zAxisComboBox.Text = "";
+                UComboBox.Text = "";
+
                 foreach (string header in csvHeaders)
                 {
                     xAxisComboBox.Items.Add(header);
@@ -506,13 +594,24 @@ namespace DataAnalyser
                 }
 
                 return true;
+
+
             }
             catch (Exception e)
             {
-                MessageBox.Show("Error: " + e.Message, "Error");
+                var currentStack = new System.Diagnostics.StackTrace(true);
+                string stackTrace= currentStack.ToString();
+
+                FlexibleMessageBox.Show("Failed to open file. Stacktrace: " + Environment.NewLine + stackTrace,
+                                     "Error",
+                                     MessageBoxButtons.OK,
+                                     MessageBoxIcon.Information,
+                                     MessageBoxDefaultButton.Button2);
                 return false;
             }
         }
+
+
 
         private bool WriteCSV(string filename)
         {
@@ -534,7 +633,7 @@ namespace DataAnalyser
                         string rowString = "";
                         for(int column = 0; column < csvData.GetLength(1); column++)
                         {
-                            rowString += csvData[row, column].ToString();
+                            if(IsValidDouble(csvData[row, column])) rowString += csvData[row, column].ToString();
                             if (column != csvHeaders.Length - 1) rowString += ",";
                         }
                         writer.WriteLine(rowString);
@@ -910,11 +1009,17 @@ namespace DataAnalyser
             try
             {
                 // sum(xy)
+                int invalidEntries = 0;
                 double sumXY = 0;
                 for (int c = 0; c <= array1.GetLength(0) - 1; c++)
                 {
                     double number1 = (array1[c, index1] * scale1);
                     double number2 = (array1[c, index2] * scale2);
+
+                    if(!IsValidDouble(number1) || !IsValidDouble(number2)){
+                        invalidEntries++;
+                        continue;
+                    }
 
                     sumXY = sumXY + (array1[c, index1] * scale1) * (array1[c, index2] * scale2);
                 }
@@ -948,7 +1053,7 @@ namespace DataAnalyser
                 }
 
                 // n
-                int n = array1.GetLength(0);
+                int n = array1.GetLength(0) - invalidEntries;
 
                 R = (n * sumXY - sumX * sumY) / (Math.Pow((n * sumXX - Math.Pow(sumX, 2)), 0.5) * Math.Pow((n * sumYY - Math.Pow(sumY, 2)), 0.5));
             }
