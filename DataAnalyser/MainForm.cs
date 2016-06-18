@@ -9,7 +9,7 @@ using System.IO;
 
 namespace DataAnalyser
 {
-    public partial class XAxisMultiplierTextBox : Form
+    public partial class MainForm : Form
     {
         string[] csvHeaders;
         double[,] csvData;
@@ -23,7 +23,7 @@ namespace DataAnalyser
         List<Double[]>[,] MainGridViewData;
         int[,] SecondaryGridViewData;
 
-        public XAxisMultiplierTextBox()
+        public MainForm()
         {
             InitializeComponent();
         }
@@ -64,12 +64,14 @@ namespace DataAnalyser
             SecondaryGridView.Columns.Clear();
 
             List<String> columns = new List<string>();
-            double val = data.min;
-            for (int x = 0; x < 10; x++) {
+            double val = data.data.Min();
+            double range = data.data.Max() - val;
+            int numberOfCells = Math.Min(10, data.data.Length);
+            for (int x = 0; x < numberOfCells; x++) {
                 columns.Add(String.Format("{0:0.00}", val));
-                val += data.range / 10.0;
+                val += range / (double)numberOfCells;
             }
-            secondaryXValues = new double[10];
+            secondaryXValues = new double[numberOfCells];
 
 
             int i = 0;
@@ -93,10 +95,11 @@ namespace DataAnalyser
             double Range = maxY - minY;
             List<String> rows = new List<string>();
             val = minY;
-            for (int y = 0; y < 10; y++)
+            numberOfCells = Math.Min(10, data.secondaryData.Length);
+            for (int y = 0; y < numberOfCells; y++)
             {
                 rows.Add(String.Format("{0:0.00}", val));
-                val += Range / 10.0;
+                val += Range / (double)numberOfCells;
             }
 
             secondaryYValues = new double[rows.Count];
@@ -139,12 +142,15 @@ namespace DataAnalyser
 
 
             //Create a series of sums per x,y reference
-
+            SecondaryGridView.RowHeadersWidth = 4;
             for (i = 0; i < secondaryYValues.Length; i++)
             {
                 DataGridViewRow row = new DataGridViewRow();
                 row.HeaderCell = new DataGridViewRowHeaderCell();
                 row.HeaderCell.Value = secondaryYValues[i].ToString();
+                int widthTemp = (row.HeaderCell.Value.ToString().Length + 3) * 10;
+                if (widthTemp > SecondaryGridView.RowHeadersWidth) SecondaryGridView.RowHeadersWidth = widthTemp;
+
                 for (int j = 0; j < secondaryXValues.Length; j++)
                 {
                     DataGridViewTextBoxCell cell = new DataGridViewTextBoxCell();
@@ -168,7 +174,6 @@ namespace DataAnalyser
 
                     row.Cells.Add(cell);
                 }
-
                 SecondaryGridView.Rows.Add(row);
             }
         }
@@ -235,9 +240,10 @@ namespace DataAnalyser
 
             double uMult = 1.0;
             double yMult = 1.0;
-
+            double xMult = 1.0;
+            double zMult = 1.0;
             try {
-                uMult = Convert.ToDouble(UAxisMultiplier.Text);
+                uMult = Convert.ToDouble(UAxisMultiplierTextBox.Text);
             } catch (Exception)
             {
                 uMult = 1.0;
@@ -252,6 +258,24 @@ namespace DataAnalyser
                 yMult = 1.0;
             }
 
+            try
+            {
+                xMult = Convert.ToDouble(XAxisMultiplierTextBox.Text);
+            }
+            catch (Exception)
+            {
+                xMult = 1.0;
+            }
+
+            try
+            {
+                zMult = Convert.ToDouble(ZAxisMultiplierTextBox.Text);
+            }
+            catch (Exception)
+            {
+                zMult = 1.0;
+            }
+
             //Iterate each time sample and add it to the appropriate x,y list
             int numberOfSamples = csvData.GetLength(0);
             double minZ = double.MaxValue;
@@ -259,17 +283,16 @@ namespace DataAnalyser
             double range = 0.0;
             for (i = 0; i < numberOfSamples; i++)
             {
-                double x = csvData[i, xIndex];
+                double x = csvData[i, xIndex] * xMult;
                 double y = csvData[i, yIndex] * yMult;
-                double z = csvData[i, zIndex];
-                double v = csvData[i, vIndex];
+                double z = csvData[i, zIndex] * zMult;
+                double u = csvData[i, vIndex] * uMult;
 
                 if (z < minZ) minZ = z;
                 int[] coordinates = GetNearestCoordinate(x, y, MainGridViewxValues, MainGridViewyValues);
                 double[] cell = new double[2];
                 cell[0] = z;
-                cell[1] = v * uMult;
-                cell[1] = v;
+                cell[1] = u;
                 MainGridViewData[coordinates[0], coordinates[1]].Add(cell);
             }
 
@@ -285,6 +308,7 @@ namespace DataAnalyser
                     {
                         double average = doubleArray.Average();
                         if (average > maxZ) maxZ = average;
+                        if (average < minZ) minZ = average;
                     }
                 }
             }
@@ -306,7 +330,6 @@ namespace DataAnalyser
                         primaryArray[k] = MainGridViewData[j, i][k][0];
                         secondaryArray[k] = MainGridViewData[j, i][k][1];
                     }
-
 
                     DataGridViewTuningCell cell = new DataGridViewTuningCell(secondaryArray, primaryArray, range, minZ);
 
@@ -331,6 +354,9 @@ namespace DataAnalyser
         {
             public double average;
             public double standardDeviation;
+            public double colourRange;
+            public double colourOffset;
+
             public double min;
             public double max;
             public int count;
@@ -351,7 +377,7 @@ namespace DataAnalyser
                 this.range = range;
                 this.offset = offset;
                 this.count = doubleArray.Length;
-                SetFormat(format);
+                SetFormat(format, range, offset);
 
             }
 
@@ -365,8 +391,11 @@ namespace DataAnalyser
                 Count = 4,
             }
 
-            public void SetFormat(DataGridViewTuningCellFormat newFormat)
+            public void SetFormat(DataGridViewTuningCellFormat newFormat, double _colourRange, double _colourOffset)
             {
+                this.colourRange = _colourRange;
+                this.colourOffset = _colourOffset;
+
                 if (newFormat == cellFormat) return;
 
                 this.Value = "";
@@ -391,8 +420,8 @@ namespace DataAnalyser
                 {
                     this.Value = String.Format("{0:0.00}", dataVal);
 
-                    double scalar = 360.0 / range;
-                    double value = scalar * (dataVal - offset);
+                    double scalar = 360.0 / colourRange;
+                    double value = scalar * (dataVal - colourOffset);
 
                     double H = (0.4 * (360.0 - value)) - 10.0;
                     double S = 0.9;
@@ -475,6 +504,7 @@ namespace DataAnalyser
                     zAxisComboBox.Items.Add(header);
                     UComboBox.Items.Add(header);
                 }
+
                 return true;
             }
             catch (Exception e)
@@ -482,8 +512,41 @@ namespace DataAnalyser
                 MessageBox.Show("Error: " + e.Message, "Error");
                 return false;
             }
+        }
 
+        private bool WriteCSV(string filename)
+        {
+            // Get the file's text.
+            try
+            {
+                using(StreamWriter writer = new StreamWriter(filename))
+                {
+                    string header = "";
+                    for (int column = 0; column < csvHeaders.Length; column++)
+                    {
+                        header += csvHeaders[column].ToString();
+                        if(column != csvHeaders.Length-1) header += ",";
+                    }
+                    writer.WriteLine(header);
 
+                    for (int row = 0; row < csvData.GetLength(0); row++)
+                    {
+                        string rowString = "";
+                        for(int column = 0; column < csvData.GetLength(1); column++)
+                        {
+                            rowString += csvData[row, column].ToString();
+                            if (column != csvHeaders.Length - 1) rowString += ",";
+                        }
+                        writer.WriteLine(rowString);
+                    }
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Error: " + e.Message, "Error");
+                return false;
+            }
         }
 
         public void UpdateMainXAxisAndRegenerate(Double[] axis)
@@ -641,9 +704,7 @@ namespace DataAnalyser
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
                 {
-                    cell.range = max - min;
-                    cell.offset = min;
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Minimum);
+                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Minimum, max - min, min);
                 }
             }
         }
@@ -667,9 +728,7 @@ namespace DataAnalyser
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
                 {
-                    cell.range = max - min;
-                    cell.offset = min;
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Maximum);
+                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Maximum, max - min, min);
                 }
             }
         }
@@ -693,9 +752,7 @@ namespace DataAnalyser
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
                 {
-                    cell.range = max - min;
-                    cell.offset = min;
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Count);
+                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Count, max - min, min);
                 }
             }
         }
@@ -720,9 +777,7 @@ namespace DataAnalyser
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
                 {
-                    cell.range = max - min;
-                    cell.offset = min;
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.StandardDeviation);
+                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.StandardDeviation, max - min, min);
                 }
             }
         }
@@ -748,16 +803,44 @@ namespace DataAnalyser
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
                 {
-                    cell.range = max - min;
-                    cell.offset = min;
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Average);
+                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Average, max - min, min);
                 }
             }
         }
 
         private void checkPulseButton_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in MainGridView.Rows) foreach (DataGridViewTuningCell cell in row.Cells) if (cell.Selected) PopulateFilteredCellGridView(cell);
+            int yIndex = 0;
+            int xIndex = 0;
+            foreach (DataGridViewRow row in MainGridView.Rows)
+            {
+                foreach (DataGridViewTuningCell cell in row.Cells)
+                {
+                    if (cell.Selected)
+                    {
+                        yIndex = cell.RowIndex;
+                        xIndex = cell.ColumnIndex;
+                        break;
+                    }
+                }
+            }
+
+            //Update the gridview with the new selection
+            PopulateMainGridView(xAxisComboBox.Text, yAxisComboBox.Text, zAxisComboBox.Text, UComboBox.Text);
+
+            foreach (DataGridViewRow row in MainGridView.Rows)
+            {
+                foreach (DataGridViewTuningCell cell in row.Cells)
+                {
+
+                    if(yIndex == cell.RowIndex && xIndex == cell.ColumnIndex)
+                    {
+                        cell.Selected = true;
+                        PopulateFilteredCellGridView(cell);
+                        return;
+                    }
+                }
+            }
         }
 
         private void button1_Click_1(object sender, EventArgs e)
@@ -821,7 +904,7 @@ namespace DataAnalyser
             {
                 if (fordPCMHelper.fileLoaded)
                 {
-                    int indexOfPulse,indexOfCalculatedLoad, indexOfMAP, indexOfTPS, indexOfCamAngle, indexOfRPM, indexOfMapPerAirmass, indexOfMapPerZeroAirmass, indexOfAirMass, indexOfFuelMass, indexOfCalculatedInjectorPW, indexOfCalculatedAFR;
+                    int indexOfPulse,indexOfCalculatedLoad, indexOfMAP, indexOfTPS, indexOfCamAngle, indexOfRPM, indexOfMapPerAirmass, indexOfMapPerZeroAirmass, indexOfAirMass, indexOfFuelMassViaSD, indexOfFuelMassViaInjMs, indexOfCalculatedInjectorPW, indexOfCalculatedAFR;
 
 
                     indexOfCamAngle = Array.FindIndex(csvHeaders, x => (x.IndexOf("cam angle", StringComparison.OrdinalIgnoreCase) >= 0));
@@ -829,8 +912,6 @@ namespace DataAnalyser
                     indexOfTPS = Array.FindIndex(csvHeaders, x => (x.IndexOf("ETC throttle", StringComparison.OrdinalIgnoreCase) >= 0));
                     indexOfMAP = Array.FindIndex(csvHeaders, x => (x.IndexOf("MANIFOLD ABSOLUTE PRESSURE", StringComparison.OrdinalIgnoreCase) >= 0));
                     indexOfPulse = Array.FindIndex(csvHeaders, x => (x.IndexOf("FUEL PULSEWIDTH", StringComparison.OrdinalIgnoreCase) >= 0));
-
-                    
 
                     if (indexOfMAP == -1)
                     {
@@ -859,7 +940,8 @@ namespace DataAnalyser
                     indexOfMapPerAirmass = Array.IndexOf(csvHeaders, "Map per Airmass");
                     indexOfMapPerZeroAirmass = Array.IndexOf(csvHeaders, "Map per Zero Airmass");
                     indexOfAirMass = Array.IndexOf(csvHeaders, "Calculated Airmass");
-                    indexOfFuelMass = Array.IndexOf(csvHeaders, "Calculated Fuel Mass");
+                    indexOfFuelMassViaSD = Array.IndexOf(csvHeaders, "Calculated Fuel Mass via SD");
+                    indexOfFuelMassViaInjMs = Array.IndexOf(csvHeaders, "Calculated Fuel Mass via Pulsewidth");
                     indexOfCalculatedInjectorPW = Array.IndexOf(csvHeaders, "Calculated Injector Pulsewidth");
                     indexOfCalculatedAFR = Array.IndexOf(csvHeaders, "Calculated Commanded AFR");
                     indexOfCalculatedLoad = Array.IndexOf(csvHeaders, "Calculated Load");
@@ -881,9 +963,14 @@ namespace DataAnalyser
                         indexOfAirMass = csvHeaders.Length + arrayResizeAmount;
                         arrayResizeAmount++;
                     }
-                    if (indexOfFuelMass == -1)
+                    if (indexOfFuelMassViaSD == -1)
                     {
-                        indexOfFuelMass = csvHeaders.Length + arrayResizeAmount;
+                        indexOfFuelMassViaSD = csvHeaders.Length + arrayResizeAmount;
+                        arrayResizeAmount++;
+                    }
+                    if (indexOfFuelMassViaInjMs == -1)
+                    {
+                        indexOfFuelMassViaInjMs = csvHeaders.Length + arrayResizeAmount;
                         arrayResizeAmount++;
                     }
                     if (indexOfCalculatedInjectorPW == -1)
@@ -902,20 +989,20 @@ namespace DataAnalyser
                         arrayResizeAmount++;
                     }
 
-
                     //Create new arrays with 3 extra values,
                     string[] newCsvHeaders = new string[csvHeaders.Length + arrayResizeAmount];
                     double[,] newCsvData = new double[csvData.GetLength(0), csvData.GetLength(1)+ arrayResizeAmount];
 
                     //Copy the previous data
                     Array.Copy(csvHeaders, newCsvHeaders, csvHeaders.Length);
-                    Array.Copy(csvData, newCsvData, csvData.Length);
+                    for(int i = 0; i < csvData.GetLength(0); i++) for (int j = 0; j < csvData.GetLength(1); j++) newCsvData[i, j] = csvData[i, j];
 
                     //Add the new headers
                     newCsvHeaders[indexOfMapPerAirmass] = "Map per Airmass";
                     newCsvHeaders[indexOfMapPerZeroAirmass] = "Map per Zero Airmass";
                     newCsvHeaders[indexOfAirMass] = "Calculated Airmass";
-                    newCsvHeaders[indexOfFuelMass] = "Calculated Fuel Mass";
+                    newCsvHeaders[indexOfFuelMassViaSD] = "Calculated Fuel Mass via SD";
+                    newCsvHeaders[indexOfFuelMassViaInjMs] = "Calculated Fuel Mass via Pulsewidth";
                     newCsvHeaders[indexOfCalculatedInjectorPW] = "Calculated Injector Pulsewidth";
                     newCsvHeaders[indexOfCalculatedAFR] = "Calculated Commanded AFR";
                     newCsvHeaders[indexOfCalculatedLoad] = "Calculated Load";
@@ -976,12 +1063,13 @@ namespace DataAnalyser
                     Boolean lambdaErrorIssued = false;
 
                     //Calculate the new values
-                    for(int i = 0; i < csvData.GetLength(0); i++)
+                    //for (int i = 0; i < csvData.GetLength(0); i++)
+                    for (int i = 0; i < 4000; i++)
                     {
                         double camAngle = csvData[i, indexOfCamAngle];
                         double rpm = csvData[i,indexOfRPM];
                         double map = csvData[i, indexOfMAP];
-                        double pulse = csvData[i, indexOfPulse];
+                        double csvPulseWidthSeconds = csvData[i, indexOfPulse];
                         double TPS = -1.0;
                         double commandedLambda = 1.0;
 
@@ -1018,43 +1106,124 @@ namespace DataAnalyser
                         //Calculate the load
                         newCsvData[i, indexOfCalculatedLoad] = airMassLbs / displacement;
 
-                        //Calculate the fuelmass
-                        double fuelMass = airMassLbs / (stoichAFR * commandedLambda);
-                        newCsvData[i, indexOfFuelMass] = fuelMass;
+                        //Calculate the fuelmass via the SD maps
+                        double fuelMassViaSD = airMassLbs / (stoichAFR * commandedLambda);
 
+                        fuelMassViaSD = fuelMassViaSD * 10000.0;
+
+                        newCsvData[i, indexOfFuelMassViaSD] = fuelMassViaSD;
 
                         //Calculate the pulse width
-                        double pulseWidth;
+                        double calculatedPulseWidthSec;
                         //When below the breakpoint
-                        //fuelmass=low*(ms-offset)
-                        //ms=(fuelmass/low)+offset
-                        if (fuelMass <= breakpoint)
+
+                        if (fuelMassViaSD <= breakpoint)
                         {
-                            pulseWidth = (fuelMass / lowSlope) + offset;
+                            calculatedPulseWidthSec = (fuelMassViaSD / lowSlope) + offset;
                         }
                         else
                         {
                             //fuelmass=high*(ms-(breakpoint*((1/low)-(1/high))+offset))
                             //ms=(breakpoint*((1/low)-(1/high))+(fuelmass/highslope)+offset
-                            pulseWidth = (breakpoint * ((1 / lowSlope) - (1 / highSlope))) + (fuelMass / highSlope) + offset;
+                            calculatedPulseWidthSec = (breakpoint * ((1 / lowSlope) - (1 / highSlope))) + (fuelMassViaSD / highSlope) + offset;
                         }
 
-                        double pulseWidthMs = (pulseWidth-offset) * 1000.0 ;
-                        double actualPulse = (pulse) * 1000.0;
-                        newCsvData[i, indexOfCalculatedInjectorPW] = pulseWidth;
+                        double calculatedPulseWithMs = (calculatedPulseWidthSec+offset) * 1000.0 ;
+                        //double calculatedPulseWithMs = (calculatedPulseWidthSec) * 1000.0;
 
-                        if(rpm > 4500)
-                        {
-                            int lol = 1;
-                        }
+                        double csvPulseWidthMs = csvPulseWidthSeconds * 1000.0;
 
+                        newCsvData[i, indexOfCalculatedInjectorPW] = calculatedPulseWidthSec;
+
+                        //Calculate the fuel mass via a reverse calc of the injector pulse width
+                        double fuelMassViaInjectorMs = highSlope * (csvPulseWidthMs - (breakpoint * ((1 / lowSlope) - (1 / highSlope)) + offset));
+
+                        fuelMassViaInjectorMs = fuelMassViaInjectorMs * 10.0;
+
+                        newCsvData[i, indexOfFuelMassViaInjMs] = fuelMassViaInjectorMs;
+
+                        newCsvData[i, indexOfPulse] = newCsvData[i, indexOfPulse]*1000.0;
                     }
+
+                    //Calculate the R² value
+
+                    double errorOfCalculatedInjPulse = GetRSquared(newCsvData, indexOfCalculatedInjectorPW, indexOfPulse, 1.0, 1000.0);
+                    double errorOfCalculatedFuelMassPulse = GetRSquared(newCsvData, indexOfFuelMassViaSD, indexOfFuelMassViaInjMs, 1.0, 1.0);
+
+                    calculatedInjectorPulseErrorTextBox.Text = String.Format("{0:0.###}", errorOfCalculatedInjPulse);
+                    calculatedFuelMassErrorTextBox.Text = String.Format("{0:0.###}", errorOfCalculatedFuelMassPulse);
+
+                    csvHeaders = newCsvHeaders;
+                    csvData = newCsvData;
+
+                    WriteCSV(@"C:\temp\test.csv");
+
 
                     return;
                 } 
+
+                //Write the new CSV file to disk
+
             }
 
             MessageBox.Show("You must load a .HPT file first!");
+        }
+
+        static public double GetRSquared(double[,] array1, int index1, int index2, double scale1, double scale2)
+        {
+            double R = 0;
+
+            try
+            {
+                // sum(xy)
+                double sumXY = 0;
+                for (int c = 0; c <= array1.GetLength(0) - 1; c++)
+                {
+                    double number1 = (array1[c, index1] * scale1);
+                    double number2 = (array1[c, index2] * scale2);
+
+                    sumXY = sumXY + (array1[c, index1] * scale1) * (array1[c, index2] * scale2);
+                }
+
+                // sum(x)
+                double sumX = 0;
+                for (int c = 0; c <= array1.GetLength(0) - 1; c++)
+                {
+                    sumX = sumX + (array1[c, index1] * scale1);
+                }
+
+                // sum(y)
+                double sumY = 0;
+                for (int c = 0; c <= array1.GetLength(0) - 1; c++)
+                {
+                    sumY = sumY + (array1[c, index2] * scale2);
+                }
+
+                // sum(x^2)
+                double sumXX = 0;
+                for (int c = 0; c <= array1.GetLength(0) - 1; c++)
+                {
+                    sumXX = sumXX + (array1[c, index1] * scale1) * (array1[c, index1] * scale1);
+                }
+
+                // sum(y^2)
+                double sumYY = 0;
+                for (int c = 0; c <= array1.GetLength(0) - 1; c++)
+                {
+                    sumYY = sumYY + (array1[c, index2] * scale2) * (array1[c, index2] * scale2);
+                }
+
+                // n
+                int n = array1.GetLength(0);
+
+                R = (n * sumXY - sumX * sumY) / (Math.Pow((n * sumXX - Math.Pow(sumX, 2)), 0.5) * Math.Pow((n * sumYY - Math.Pow(sumY, 2)), 0.5));
+            }
+            catch (Exception ex)
+            {
+                throw (ex);
+            }
+
+            return R * R;
         }
 
         private void UComboBox_DragLeave(object sender, EventArgs e)

@@ -15,7 +15,7 @@ namespace DataAnalyser
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new XAxisMultiplierTextBox());
+            Application.Run(new MainForm());
         }
     }
 }

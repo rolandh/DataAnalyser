@@ -1,6 +1,6 @@
 ﻿namespace DataAnalyser
 {
-    partial class XAxisMultiplierTextBox
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -30,7 +30,13 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.PlotTab = new System.Windows.Forms.TabPage();
-            this.UAxisMultiplier = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.XAxisMultiplierTextBox = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.ZAxisMultiplierTextBox = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.UAxisMultiplierTextBox = new System.Windows.Forms.TextBox();
             this.YAxisMultiplierTextBox = new System.Windows.Forms.TextBox();
             this.ChangeMainYAxisButton = new System.Windows.Forms.Button();
             this.ChangeMainXAxisButton = new System.Windows.Forms.Button();
@@ -52,17 +58,15 @@
             this.SecondaryGridView = new System.Windows.Forms.DataGridView();
             this.MainGridView = new System.Windows.Forms.DataGridView();
             this.CalculateTab = new System.Windows.Forms.TabPage();
+            this.label3 = new System.Windows.Forms.Label();
             this.calculateAirmassButton = new System.Windows.Forms.Button();
             this.hptTab = new System.Windows.Forms.TabPage();
             this.LoadButton = new System.Windows.Forms.Button();
-            this.fordPCMHelper1 = new FordPCMEditor.FordPCMHelper();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.XAxisMultiplier = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
+            this.fordPCMHelper = new FordPCMEditor.FordPCMHelper();
+            this.calculatedInjectorPulseErrorTextBox = new System.Windows.Forms.TextBox();
+            this.calculatedFuelMassErrorTextBox = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.PlotTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SecondaryGridView)).BeginInit();
@@ -89,11 +93,11 @@
             // 
             this.PlotTab.Controls.Add(this.label7);
             this.PlotTab.Controls.Add(this.label6);
-            this.PlotTab.Controls.Add(this.XAxisMultiplier);
+            this.PlotTab.Controls.Add(this.XAxisMultiplierTextBox);
             this.PlotTab.Controls.Add(this.label5);
-            this.PlotTab.Controls.Add(this.textBox1);
+            this.PlotTab.Controls.Add(this.ZAxisMultiplierTextBox);
             this.PlotTab.Controls.Add(this.label4);
-            this.PlotTab.Controls.Add(this.UAxisMultiplier);
+            this.PlotTab.Controls.Add(this.UAxisMultiplierTextBox);
             this.PlotTab.Controls.Add(this.YAxisMultiplierTextBox);
             this.PlotTab.Controls.Add(this.ChangeMainYAxisButton);
             this.PlotTab.Controls.Add(this.ChangeMainXAxisButton);
@@ -122,13 +126,65 @@
             this.PlotTab.Text = "3D Plot View";
             this.PlotTab.UseVisualStyleBackColor = true;
             // 
-            // UAxisMultiplier
+            // label7
             // 
-            this.UAxisMultiplier.Location = new System.Drawing.Point(968, 82);
-            this.UAxisMultiplier.Name = "UAxisMultiplier";
-            this.UAxisMultiplier.Size = new System.Drawing.Size(100, 20);
-            this.UAxisMultiplier.TabIndex = 24;
-            this.UAxisMultiplier.Text = "1.0";
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(882, 85);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(81, 13);
+            this.label7.TabIndex = 30;
+            this.label7.Text = "U Axis Multiplier";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 81);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(80, 13);
+            this.label6.TabIndex = 29;
+            this.label6.Text = "X Axis Multiplier";
+            // 
+            // XAxisMultiplierTextBox
+            // 
+            this.XAxisMultiplierTextBox.Location = new System.Drawing.Point(92, 78);
+            this.XAxisMultiplierTextBox.Name = "XAxisMultiplierTextBox";
+            this.XAxisMultiplierTextBox.Size = new System.Drawing.Size(100, 20);
+            this.XAxisMultiplierTextBox.TabIndex = 28;
+            this.XAxisMultiplierTextBox.Text = "1.0";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(587, 85);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(80, 13);
+            this.label5.TabIndex = 27;
+            this.label5.Text = "Z Axis Multiplier";
+            // 
+            // ZAxisMultiplierTextBox
+            // 
+            this.ZAxisMultiplierTextBox.Location = new System.Drawing.Point(673, 82);
+            this.ZAxisMultiplierTextBox.Name = "ZAxisMultiplierTextBox";
+            this.ZAxisMultiplierTextBox.Size = new System.Drawing.Size(100, 20);
+            this.ZAxisMultiplierTextBox.TabIndex = 26;
+            this.ZAxisMultiplierTextBox.Text = "1.0";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(292, 81);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(80, 13);
+            this.label4.TabIndex = 25;
+            this.label4.Text = "Y Axis Multiplier";
+            // 
+            // UAxisMultiplierTextBox
+            // 
+            this.UAxisMultiplierTextBox.Location = new System.Drawing.Point(968, 82);
+            this.UAxisMultiplierTextBox.Name = "UAxisMultiplierTextBox";
+            this.UAxisMultiplierTextBox.Size = new System.Drawing.Size(100, 20);
+            this.UAxisMultiplierTextBox.TabIndex = 24;
+            this.UAxisMultiplierTextBox.Text = "1.0";
             // 
             // YAxisMultiplierTextBox
             // 
@@ -325,6 +381,10 @@
             // 
             // CalculateTab
             // 
+            this.CalculateTab.Controls.Add(this.label9);
+            this.CalculateTab.Controls.Add(this.label8);
+            this.CalculateTab.Controls.Add(this.calculatedFuelMassErrorTextBox);
+            this.CalculateTab.Controls.Add(this.calculatedInjectorPulseErrorTextBox);
             this.CalculateTab.Controls.Add(this.label3);
             this.CalculateTab.Controls.Add(this.calculateAirmassButton);
             this.CalculateTab.Location = new System.Drawing.Point(4, 22);
@@ -334,19 +394,28 @@
             this.CalculateTab.Text = "Calculate Variables";
             this.CalculateTab.UseVisualStyleBackColor = true;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(16, 14);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(173, 13);
+            this.label3.TabIndex = 3;
+            this.label3.Text = "Calculate Airmass, Fuelmass, Inj ms";
+            // 
             // calculateAirmassButton
             // 
-            this.calculateAirmassButton.Location = new System.Drawing.Point(16, 85);
+            this.calculateAirmassButton.Location = new System.Drawing.Point(19, 40);
             this.calculateAirmassButton.Name = "calculateAirmassButton";
-            this.calculateAirmassButton.Size = new System.Drawing.Size(106, 23);
+            this.calculateAirmassButton.Size = new System.Drawing.Size(170, 23);
             this.calculateAirmassButton.TabIndex = 2;
-            this.calculateAirmassButton.Text = "Calculate Airmass";
+            this.calculateAirmassButton.Text = "Calculate and Update CSV";
             this.calculateAirmassButton.UseVisualStyleBackColor = true;
             this.calculateAirmassButton.Click += new System.EventHandler(this.calculateAirmassButton_Click);
             // 
             // hptTab
             // 
-            this.hptTab.Controls.Add(this.fordPCMHelper1);
+            this.hptTab.Controls.Add(this.fordPCMHelper);
             this.hptTab.Location = new System.Drawing.Point(4, 22);
             this.hptTab.Name = "hptTab";
             this.hptTab.Padding = new System.Windows.Forms.Padding(3);
@@ -367,83 +436,54 @@
             // 
             // fordPCMHelper1
             // 
-            this.fordPCMHelper1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.fordPCMHelper.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.fordPCMHelper1.Location = new System.Drawing.Point(6, 0);
-            this.fordPCMHelper1.Name = "fordPCMHelper1";
-            this.fordPCMHelper1.Size = new System.Drawing.Size(1543, 587);
-            this.fordPCMHelper1.TabIndex = 0;
+            this.fordPCMHelper.Location = new System.Drawing.Point(6, 0);
+            this.fordPCMHelper.Name = "fordPCMHelper1";
+            this.fordPCMHelper.Size = new System.Drawing.Size(1543, 587);
+            this.fordPCMHelper.TabIndex = 0;
             // 
-            // label3
+            // calculatedInjectorPulseErrorTextBox
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 14);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 13);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "label3";
+            this.calculatedInjectorPulseErrorTextBox.Location = new System.Drawing.Point(19, 102);
+            this.calculatedInjectorPulseErrorTextBox.Name = "calculatedInjectorPulseErrorTextBox";
+            this.calculatedInjectorPulseErrorTextBox.Size = new System.Drawing.Size(100, 20);
+            this.calculatedInjectorPulseErrorTextBox.TabIndex = 29;
             // 
-            // label4
+            // calculatedFuelMassErrorTextBox
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(292, 81);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(80, 13);
-            this.label4.TabIndex = 25;
-            this.label4.Text = "Y Axis Multiplier";
+            this.calculatedFuelMassErrorTextBox.Location = new System.Drawing.Point(19, 148);
+            this.calculatedFuelMassErrorTextBox.Name = "calculatedFuelMassErrorTextBox";
+            this.calculatedFuelMassErrorTextBox.Size = new System.Drawing.Size(100, 20);
+            this.calculatedFuelMassErrorTextBox.TabIndex = 30;
             // 
-            // label5
+            // label8
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(587, 85);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(80, 13);
-            this.label5.TabIndex = 27;
-            this.label5.Text = "X Axis Multiplier";
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(16, 78);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(137, 13);
+            this.label8.TabIndex = 31;
+            this.label8.Text = "Error of Calculated Inj Pulse";
             // 
-            // textBox1
+            // label9
             // 
-            this.textBox1.Location = new System.Drawing.Point(673, 82);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 26;
-            this.textBox1.Text = "1.0";
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(16, 125);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(358, 13);
+            this.label9.TabIndex = 32;
+            this.label9.Text = "Error of Calculated Fuel Mass via SD vs Calculated Fuel Mass via Inj Pulse";
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 81);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(80, 13);
-            this.label6.TabIndex = 29;
-            this.label6.Text = "Y Axis Multiplier";
-            // 
-            // XAxisMultiplier
-            // 
-            this.XAxisMultiplier.Location = new System.Drawing.Point(92, 78);
-            this.XAxisMultiplier.Name = "XAxisMultiplier";
-            this.XAxisMultiplier.Size = new System.Drawing.Size(100, 20);
-            this.XAxisMultiplier.TabIndex = 28;
-            this.XAxisMultiplier.Text = "1.0";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(882, 85);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(80, 13);
-            this.label7.TabIndex = 30;
-            this.label7.Text = "X Axis Multiplier";
-            // 
-            // XAxisMultiplierTextBox
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1568, 680);
             this.Controls.Add(this.LoadButton);
             this.Controls.Add(this.tabControl1);
-            this.Name = "XAxisMultiplierTextBox";
+            this.Name = "MainForm";
             this.Text = "DataAnalyser";
             this.tabControl1.ResumeLayout(false);
             this.PlotTab.ResumeLayout(false);
@@ -482,19 +522,22 @@
         private System.Windows.Forms.Button ChangeMainXAxisButton;
         private System.Windows.Forms.Button ChangeMainYAxisButton;
         private System.Windows.Forms.TabPage hptTab;
-        private FordPCMEditor.FordPCMHelper fordPCMHelper;
         private System.Windows.Forms.TabPage CalculateTab;
         private System.Windows.Forms.Button calculateAirmassButton;
         private System.Windows.Forms.TextBox YAxisMultiplierTextBox;
-        private System.Windows.Forms.TextBox UAxisMultiplier;
-        private FordPCMEditor.FordPCMHelper fordPCMHelper1;
+        private System.Windows.Forms.TextBox UAxisMultiplierTextBox;
+        private FordPCMEditor.FordPCMHelper fordPCMHelper;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox ZAxisMultiplierTextBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox XAxisMultiplier;
+        private System.Windows.Forms.TextBox XAxisMultiplierTextBox;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox calculatedFuelMassErrorTextBox;
+        private System.Windows.Forms.TextBox calculatedInjectorPulseErrorTextBox;
     }
 }
 
