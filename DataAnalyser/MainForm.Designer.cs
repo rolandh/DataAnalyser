@@ -58,21 +58,19 @@
             this.SecondaryGridView = new System.Windows.Forms.DataGridView();
             this.MainGridView = new System.Windows.Forms.DataGridView();
             this.CalculateTab = new System.Windows.Forms.TabPage();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.calculatedFuelMassErrorTextBox = new System.Windows.Forms.TextBox();
+            this.calculatedInjectorPulseErrorTextBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.calculateAirmassButton = new System.Windows.Forms.Button();
             this.hptTab = new System.Windows.Forms.TabPage();
             this.LoadButton = new System.Windows.Forms.Button();
-            this.fordPCMHelper = new FordPCMEditor.FordPCMHelper();
-            this.calculatedInjectorPulseErrorTextBox = new System.Windows.Forms.TextBox();
-            this.calculatedFuelMassErrorTextBox = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.PlotTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SecondaryGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainGridView)).BeginInit();
             this.CalculateTab.SuspendLayout();
-            this.hptTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -394,6 +392,38 @@
             this.CalculateTab.Text = "Calculate Variables";
             this.CalculateTab.UseVisualStyleBackColor = true;
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(16, 125);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(358, 13);
+            this.label9.TabIndex = 32;
+            this.label9.Text = "Error of Calculated Fuel Mass via SD vs Calculated Fuel Mass via Inj Pulse";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(16, 78);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(137, 13);
+            this.label8.TabIndex = 31;
+            this.label8.Text = "Error of Calculated Inj Pulse";
+            // 
+            // calculatedFuelMassErrorTextBox
+            // 
+            this.calculatedFuelMassErrorTextBox.Location = new System.Drawing.Point(19, 148);
+            this.calculatedFuelMassErrorTextBox.Name = "calculatedFuelMassErrorTextBox";
+            this.calculatedFuelMassErrorTextBox.Size = new System.Drawing.Size(100, 20);
+            this.calculatedFuelMassErrorTextBox.TabIndex = 30;
+            // 
+            // calculatedInjectorPulseErrorTextBox
+            // 
+            this.calculatedInjectorPulseErrorTextBox.Location = new System.Drawing.Point(19, 102);
+            this.calculatedInjectorPulseErrorTextBox.Name = "calculatedInjectorPulseErrorTextBox";
+            this.calculatedInjectorPulseErrorTextBox.Size = new System.Drawing.Size(100, 20);
+            this.calculatedInjectorPulseErrorTextBox.TabIndex = 29;
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -415,13 +445,12 @@
             // 
             // hptTab
             // 
-            this.hptTab.Controls.Add(this.fordPCMHelper);
             this.hptTab.Location = new System.Drawing.Point(4, 22);
             this.hptTab.Name = "hptTab";
             this.hptTab.Padding = new System.Windows.Forms.Padding(3);
             this.hptTab.Size = new System.Drawing.Size(1545, 593);
             this.hptTab.TabIndex = 1;
-            this.hptTab.Text = "HPT File Viewer";
+            this.hptTab.Text = "Paste HPT Data Here (Future)";
             this.hptTab.UseVisualStyleBackColor = true;
             // 
             // LoadButton
@@ -433,48 +462,6 @@
             this.LoadButton.Text = "Load CSV Data";
             this.LoadButton.UseVisualStyleBackColor = true;
             this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
-            // 
-            // fordPCMHelper1
-            // 
-            this.fordPCMHelper.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.fordPCMHelper.Location = new System.Drawing.Point(6, 0);
-            this.fordPCMHelper.Name = "fordPCMHelper1";
-            this.fordPCMHelper.Size = new System.Drawing.Size(1543, 587);
-            this.fordPCMHelper.TabIndex = 0;
-            // 
-            // calculatedInjectorPulseErrorTextBox
-            // 
-            this.calculatedInjectorPulseErrorTextBox.Location = new System.Drawing.Point(19, 102);
-            this.calculatedInjectorPulseErrorTextBox.Name = "calculatedInjectorPulseErrorTextBox";
-            this.calculatedInjectorPulseErrorTextBox.Size = new System.Drawing.Size(100, 20);
-            this.calculatedInjectorPulseErrorTextBox.TabIndex = 29;
-            // 
-            // calculatedFuelMassErrorTextBox
-            // 
-            this.calculatedFuelMassErrorTextBox.Location = new System.Drawing.Point(19, 148);
-            this.calculatedFuelMassErrorTextBox.Name = "calculatedFuelMassErrorTextBox";
-            this.calculatedFuelMassErrorTextBox.Size = new System.Drawing.Size(100, 20);
-            this.calculatedFuelMassErrorTextBox.TabIndex = 30;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(16, 78);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(137, 13);
-            this.label8.TabIndex = 31;
-            this.label8.Text = "Error of Calculated Inj Pulse";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(16, 125);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(358, 13);
-            this.label9.TabIndex = 32;
-            this.label9.Text = "Error of Calculated Fuel Mass via SD vs Calculated Fuel Mass via Inj Pulse";
             // 
             // MainForm
             // 
@@ -492,7 +479,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.MainGridView)).EndInit();
             this.CalculateTab.ResumeLayout(false);
             this.CalculateTab.PerformLayout();
-            this.hptTab.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -526,7 +512,6 @@
         private System.Windows.Forms.Button calculateAirmassButton;
         private System.Windows.Forms.TextBox YAxisMultiplierTextBox;
         private System.Windows.Forms.TextBox UAxisMultiplierTextBox;
-        private FordPCMEditor.FordPCMHelper fordPCMHelper;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox ZAxisMultiplierTextBox;
         private System.Windows.Forms.Label label4;
