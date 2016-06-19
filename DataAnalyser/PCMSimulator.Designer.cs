@@ -37,6 +37,8 @@
             this.cancelButton = new System.Windows.Forms.Button();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.calculatedInjectorTrimmedPulseErrorTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label9
@@ -116,10 +118,28 @@
             this.label1.TabIndex = 41;
             this.label1.Text = "Progress:";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(155, 69);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(180, 13);
+            this.label2.TabIndex = 43;
+            this.label2.Text = "Error of Trimmed Calculated Inj Pulse";
+            // 
+            // calculatedInjectorTrimmedPulseErrorTextBox
+            // 
+            this.calculatedInjectorTrimmedPulseErrorTextBox.Location = new System.Drawing.Point(158, 93);
+            this.calculatedInjectorTrimmedPulseErrorTextBox.Name = "calculatedInjectorTrimmedPulseErrorTextBox";
+            this.calculatedInjectorTrimmedPulseErrorTextBox.Size = new System.Drawing.Size(100, 20);
+            this.calculatedInjectorTrimmedPulseErrorTextBox.TabIndex = 42;
+            // 
             // PCMSimulator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.calculatedInjectorTrimmedPulseErrorTextBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.cancelButton);
@@ -147,5 +167,7 @@
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox calculatedInjectorTrimmedPulseErrorTextBox;
     }
 }

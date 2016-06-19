@@ -11,6 +11,33 @@ namespace DataAnalyser
 {
     public static class HelperMethods
     {
+
+
+        private static double Mean(double[][] values, int index, int start, int end)
+        {
+            double s = 0;
+
+            for (int i = start; i < end; i++)
+            {
+                s += values[i][index];
+            }
+
+            return s / (end - start);
+        }
+
+
+        private static double RootMeanSquare(double[][] values, int index)
+        {
+            double s = 0;
+            int i;
+            for (i = 0; i < values.Length; i++)
+            {
+                s += values[i][index] * values[i][index];
+            }
+            return Math.Sqrt(s / values.Length);
+        }
+
+
         /// <summary>
         /// Partitions the given list around a pivot element such that all elements on left of pivot are <= pivot
         /// and the ones at thr right are > pivot. This method can be used for sorting, N-order statistics such as
@@ -86,7 +113,7 @@ namespace DataAnalyser
 
         public static bool IsValidDouble(double value)
         {
-            if (value == double.NaN || double.IsInfinity(value)) return false;
+            if (double.IsNaN(value) || double.IsInfinity(value)) return false;
             return true;
         }
 
@@ -110,7 +137,7 @@ namespace DataAnalyser
                         string rowString = "";
                         for (int column = 0; column < csvData[0].Length; column++)
                         {
-                            rowString += csvData[row][column].ToString();
+                            if(IsValidDouble(csvData[row][column])) rowString += csvData[row][column].ToString();
                             if (column != csvHeaders.Length - 1) rowString += ",";
                         }
                         writer.WriteLine(rowString);

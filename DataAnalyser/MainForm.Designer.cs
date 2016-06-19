@@ -30,6 +30,18 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.PlotTab = new System.Windows.Forms.TabPage();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.usd = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.xsd = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.ysd = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.zsd = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.XAxisMultiplierTextBox = new System.Windows.Forms.TextBox();
@@ -58,10 +70,10 @@
             this.SecondaryGridView = new System.Windows.Forms.DataGridView();
             this.MainGridView = new System.Windows.Forms.DataGridView();
             this.CalculateTab = new System.Windows.Forms.TabPage();
-            this.pcmSimulator1 = new DataAnalyser.PCMSimulator();
             this.hptTab = new System.Windows.Forms.TabPage();
             this.fordPCMHelper = new FordPCMEditor.FordPCMHelper();
             this.LoadButton = new System.Windows.Forms.Button();
+            this.pcmSimulator1 = new DataAnalyser.PCMSimulator();
             this.tabControl1.SuspendLayout();
             this.PlotTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SecondaryGridView)).BeginInit();
@@ -86,6 +98,18 @@
             // 
             // PlotTab
             // 
+            this.PlotTab.Controls.Add(this.label13);
+            this.PlotTab.Controls.Add(this.label14);
+            this.PlotTab.Controls.Add(this.usd);
+            this.PlotTab.Controls.Add(this.label11);
+            this.PlotTab.Controls.Add(this.label12);
+            this.PlotTab.Controls.Add(this.xsd);
+            this.PlotTab.Controls.Add(this.label9);
+            this.PlotTab.Controls.Add(this.label10);
+            this.PlotTab.Controls.Add(this.ysd);
+            this.PlotTab.Controls.Add(this.label8);
+            this.PlotTab.Controls.Add(this.label3);
+            this.PlotTab.Controls.Add(this.zsd);
             this.PlotTab.Controls.Add(this.label7);
             this.PlotTab.Controls.Add(this.label6);
             this.PlotTab.Controls.Add(this.XAxisMultiplierTextBox);
@@ -121,10 +145,114 @@
             this.PlotTab.Text = "3D Plot View";
             this.PlotTab.UseVisualStyleBackColor = true;
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(1032, 110);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(103, 13);
+            this.label13.TabIndex = 42;
+            this.label13.Text = "Standard Deviations";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(880, 110);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(102, 13);
+            this.label14.TabIndex = 41;
+            this.label14.Text = "Ignore Data Beyond";
+            // 
+            // usd
+            // 
+            this.usd.Location = new System.Drawing.Point(988, 106);
+            this.usd.Name = "usd";
+            this.usd.Size = new System.Drawing.Size(38, 20);
+            this.usd.TabIndex = 40;
+            this.usd.Text = "3.14";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(158, 112);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(103, 13);
+            this.label11.TabIndex = 39;
+            this.label11.Text = "Standard Deviations";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 112);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(102, 13);
+            this.label12.TabIndex = 38;
+            this.label12.Text = "Ignore Data Beyond";
+            // 
+            // xsd
+            // 
+            this.xsd.Location = new System.Drawing.Point(114, 108);
+            this.xsd.Name = "xsd";
+            this.xsd.Size = new System.Drawing.Size(38, 20);
+            this.xsd.TabIndex = 37;
+            this.xsd.Text = "3.14";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(422, 112);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(103, 13);
+            this.label9.TabIndex = 36;
+            this.label9.Text = "Standard Deviations";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(270, 112);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(102, 13);
+            this.label10.TabIndex = 35;
+            this.label10.Text = "Ignore Data Beyond";
+            // 
+            // ysd
+            // 
+            this.ysd.Location = new System.Drawing.Point(378, 108);
+            this.ysd.Name = "ysd";
+            this.ysd.Size = new System.Drawing.Size(38, 20);
+            this.ysd.TabIndex = 34;
+            this.ysd.Text = "3.14";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(715, 111);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(103, 13);
+            this.label8.TabIndex = 33;
+            this.label8.Text = "Standard Deviations";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(563, 111);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(102, 13);
+            this.label3.TabIndex = 32;
+            this.label3.Text = "Ignore Data Beyond";
+            // 
+            // zsd
+            // 
+            this.zsd.Location = new System.Drawing.Point(671, 107);
+            this.zsd.Name = "zsd";
+            this.zsd.Size = new System.Drawing.Size(38, 20);
+            this.zsd.TabIndex = 31;
+            this.zsd.Text = "3.14";
+            // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(882, 85);
+            this.label7.Location = new System.Drawing.Point(903, 85);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(81, 13);
             this.label7.TabIndex = 30;
@@ -133,7 +261,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 81);
+            this.label6.Location = new System.Drawing.Point(31, 81);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(80, 13);
             this.label6.TabIndex = 29;
@@ -141,7 +269,7 @@
             // 
             // XAxisMultiplierTextBox
             // 
-            this.XAxisMultiplierTextBox.Location = new System.Drawing.Point(92, 78);
+            this.XAxisMultiplierTextBox.Location = new System.Drawing.Point(114, 78);
             this.XAxisMultiplierTextBox.Name = "XAxisMultiplierTextBox";
             this.XAxisMultiplierTextBox.Size = new System.Drawing.Size(100, 20);
             this.XAxisMultiplierTextBox.TabIndex = 28;
@@ -175,7 +303,7 @@
             // 
             // UAxisMultiplierTextBox
             // 
-            this.UAxisMultiplierTextBox.Location = new System.Drawing.Point(968, 82);
+            this.UAxisMultiplierTextBox.Location = new System.Drawing.Point(989, 82);
             this.UAxisMultiplierTextBox.Name = "UAxisMultiplierTextBox";
             this.UAxisMultiplierTextBox.Size = new System.Drawing.Size(100, 20);
             this.UAxisMultiplierTextBox.TabIndex = 24;
@@ -191,7 +319,7 @@
             // 
             // ChangeMainYAxisButton
             // 
-            this.ChangeMainYAxisButton.Location = new System.Drawing.Point(108, 109);
+            this.ChangeMainYAxisButton.Location = new System.Drawing.Point(105, 146);
             this.ChangeMainYAxisButton.Name = "ChangeMainYAxisButton";
             this.ChangeMainYAxisButton.Size = new System.Drawing.Size(96, 23);
             this.ChangeMainYAxisButton.TabIndex = 22;
@@ -201,7 +329,7 @@
             // 
             // ChangeMainXAxisButton
             // 
-            this.ChangeMainXAxisButton.Location = new System.Drawing.Point(6, 109);
+            this.ChangeMainXAxisButton.Location = new System.Drawing.Point(3, 146);
             this.ChangeMainXAxisButton.Name = "ChangeMainXAxisButton";
             this.ChangeMainXAxisButton.Size = new System.Drawing.Size(96, 23);
             this.ChangeMainXAxisButton.TabIndex = 20;
@@ -292,7 +420,7 @@
             // 
             // checkPulseButton
             // 
-            this.checkPulseButton.Location = new System.Drawing.Point(885, 108);
+            this.checkPulseButton.Location = new System.Drawing.Point(885, 146);
             this.checkPulseButton.Name = "checkPulseButton";
             this.checkPulseButton.Size = new System.Drawing.Size(262, 23);
             this.checkPulseButton.TabIndex = 8;
@@ -355,9 +483,9 @@
             this.SecondaryGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.SecondaryGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.SecondaryGridView.Location = new System.Drawing.Point(885, 138);
+            this.SecondaryGridView.Location = new System.Drawing.Point(885, 175);
             this.SecondaryGridView.Name = "SecondaryGridView";
-            this.SecondaryGridView.Size = new System.Drawing.Size(654, 449);
+            this.SecondaryGridView.Size = new System.Drawing.Size(654, 412);
             this.SecondaryGridView.TabIndex = 2;
             this.SecondaryGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.SecondaryGridView_ColumnHeaderMouseClick);
             this.SecondaryGridView.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.SecondaryGridView_RowHeaderMouseClick);
@@ -367,9 +495,9 @@
             this.MainGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.MainGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.MainGridView.Location = new System.Drawing.Point(5, 138);
+            this.MainGridView.Location = new System.Drawing.Point(5, 175);
             this.MainGridView.Name = "MainGridView";
-            this.MainGridView.Size = new System.Drawing.Size(865, 449);
+            this.MainGridView.Size = new System.Drawing.Size(865, 412);
             this.MainGridView.TabIndex = 1;
             this.MainGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_ColumnHeaderMouseClick);
             this.MainGridView.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_RowHeaderMouseClick);
@@ -383,16 +511,6 @@
             this.CalculateTab.TabIndex = 2;
             this.CalculateTab.Text = "Calculate Variables";
             this.CalculateTab.UseVisualStyleBackColor = true;
-            // 
-            // pcmSimulator1
-            // 
-            this.pcmSimulator1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pcmSimulator1.Location = new System.Drawing.Point(3, 3);
-            this.pcmSimulator1.Name = "pcmSimulator1";
-            this.pcmSimulator1.Size = new System.Drawing.Size(1537, 578);
-            this.pcmSimulator1.TabIndex = 0;
             // 
             // hptTab
             // 
@@ -424,6 +542,16 @@
             this.LoadButton.Text = "Load CSV Data";
             this.LoadButton.UseVisualStyleBackColor = true;
             this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
+            // 
+            // pcmSimulator1
+            // 
+            this.pcmSimulator1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pcmSimulator1.Location = new System.Drawing.Point(3, 3);
+            this.pcmSimulator1.Name = "pcmSimulator1";
+            this.pcmSimulator1.Size = new System.Drawing.Size(1537, 578);
+            this.pcmSimulator1.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -481,6 +609,18 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox XAxisMultiplierTextBox;
         private PCMSimulator pcmSimulator1;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox usd;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox xsd;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox zsd;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox ysd;
     }
 }
 

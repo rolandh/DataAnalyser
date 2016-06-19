@@ -4,9 +4,6 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using FordPCMEditor;
-using System.IO;
-using JR.Utils.GUI.Forms;
 
 namespace DataAnalyser
 {
@@ -235,7 +232,7 @@ namespace DataAnalyser
             int xIndex = -1;
             int yIndex = -1;
             int zIndex = -1;
-            int vIndex = -1;
+            int uIndex = -1;
             int numberOfHeaders = csvData[0].Length;
             for (i = 0; i < numberOfHeaders; i++)
             {
@@ -245,20 +242,20 @@ namespace DataAnalyser
                     if (csvHeaders[i].Equals(xHeader)) xIndex = i;
                     if (csvHeaders[i].Equals(yHeader)) yIndex = i;
                     if (csvHeaders[i].Equals(zHeader)) zIndex = i;
-                    if (csvHeaders[i].Equals(vHeader)) vIndex = i;
+                    if (csvHeaders[i].Equals(vHeader)) uIndex = i;
                 }
                 else
                 {
                     if (csvHeaders[i].Contains(xHeader)) xIndex = i;
                     if (csvHeaders[i].Contains(yHeader)) yIndex = i;
                     if (csvHeaders[i].Contains(zHeader)) zIndex = i;
-                    if (csvHeaders[i].Contains(vHeader)) vIndex = i;
+                    if (csvHeaders[i].Contains(vHeader)) uIndex = i;
                 }
-                if (yIndex != -1 && xIndex != -1 && zIndex != -1 && vIndex != -1) break;
+                if (yIndex != -1 && xIndex != -1 && zIndex != -1 && uIndex != -1) break;
             }
 
             //We couldn't find the indexs
-            if (yIndex == -1 || xIndex == -1 || zIndex == -1 || vIndex == -1)
+            if (yIndex == -1 || xIndex == -1 || zIndex == -1 || uIndex == -1)
             {
                 MessageBox.Show("Error: Couldn't find X/Y/Z index in file", "Error");
                 return;
@@ -308,29 +305,32 @@ namespace DataAnalyser
                 zMult = 1.0;
             }
 
-            //csvData = RemoveOutliers(csvData, xIndex, 0.95);
-            //csvData = RemoveOutliers(csvData, yIndex, 0.95);
-            //csvData = RemoveOutliers(csvData, zIndex, 0.95);
+            double[][] csvDataCopy = csvData.Select(a => a.ToArray()).ToArray();
+
+            double xsdignore, ysdignore, zsdignore, usdignore;
+
+            if(double.TryParse(xsd.Text, out xsdignore)) RemoveOutliers(ref csvDataCopy, xIndex, xsdignore);
+            if(double.TryParse(ysd.Text, out ysdignore)) RemoveOutliers(ref csvDataCopy, xIndex, ysdignore);
+            if (double.TryParse(zsd.Text, out zsdignore)) RemoveOutliers(ref csvDataCopy, zIndex, zsdignore);
+            if(double.TryParse(usd.Text, out usdignore)) RemoveOutliers(ref csvDataCopy, uIndex, usdignore);
 
             //csvData = RemoveOutliers(csvData, uIndex, 0.95);
 
             //Iterate each time sample and add it to the appropriate x,y list
-            int numberOfSamples = csvData.Length;
+            int numberOfSamples = csvDataCopy.Length;
             double minZ = double.MaxValue;
             double maxZ = double.MinValue;
             double range = 0.0;
             for (i = 0; i < numberOfSamples; i++)
             {
-                double x = csvData[i][ xIndex] * xMult;
-                double y = csvData[i][ yIndex] * yMult;
-                double z = csvData[i][ zIndex] * zMult;
-                double u = csvData[i][ vIndex] * uMult;
+                double x = csvDataCopy[i][ xIndex] * xMult;
+                double y = csvDataCopy[i][ yIndex] * yMult;
+                double z = csvDataCopy[i][ zIndex] * zMult;
+                double u = csvDataCopy[i][ uIndex] * uMult;
 
                 //Skip the entry if it is invalid
                 if (!HelperMethods.IsValidDouble(x) || !HelperMethods.IsValidDouble(y) || !HelperMethods.IsValidDouble(z)) continue;
 
-                //FIXME why is this here?
-                //if (z < minZ) minZ = z;
                 int[] coordinates = GetNearestCoordinate(x, y, MainGridViewxValues, MainGridViewyValues);
                 double[] cell = new double[2];
                 cell[0] = z;
@@ -404,40 +404,56 @@ namespace DataAnalyser
             return conditionedData;
         }
 
-        //public static double[][] RemoveOutliers(double[][] data, int index, double standardDeviationMultiple)
-        //{
-        //    //Split into two seperate arrays
-        //    List<double> array = new List<double>();
+        public static int RemoveOutliers(ref double[][] data, int index, double standardDeviationMultiple)
+        {
+            int removedEntries = 0;
+            //Split into two seperate arrays
+            List<double> array = new List<double>();
 
-        //    int length = data.GetLength(0);
+            int length = data.GetLength(0);
 
-        //    //Copy the data we are working on to an array
-        //    for (int i = 0; i < length; i++) array.Add(data[i][index]);
+            //We don't have enough samples to accurate check for outliers
+            if (length < 30) return 0;
 
-        //    double median = HelperMethods.Median(array);
-        //    double average = array.Average();
-        //    double sumOfSquaresOfDifferences = array.Select(val => (val - average) * (val - average)).Sum();
-        //    double standardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / array.Count);
+            //Copy the data we are working on to an array so we can calculate SD and our removal limits
+            double average = 0.0;
+            int count = 0;
+            for (int i = 0; i < length; i++)
+            {
+                double value = data[i][index];
+                if(HelperMethods.IsValidDouble(value))
+                { 
+                    average += value;
+                    count++;
+                    array.Add(value);
+                }
+            }
+            average /= count;
 
-        //    //Remove any value > or < standardDeviationMultiple*standardDeviation1 from the median
-        //    double upperLimit = (standardDeviationMultiple * standardDeviation) + median;
-        //    double lowerLimit = median - (standardDeviationMultiple * -standardDeviation);
+            double median = HelperMethods.Median(array);
+            double sumOfSquaresOfDifferences = array.Select(val => (val - average) * (val - average)).Sum();
+            double standardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / array.Count);
 
-        //    List<List<double>> resultArray = new List<List<double>>();
+            //If we have no variability then nothing to remove
+            if (standardDeviation == 0.0) return 0;
 
-        //    double test = resultArray[0][2];
+            //Remove any value > or < standardDeviationMultiple*standardDeviation1 from the median
+            double upperLimit = (standardDeviationMultiple * standardDeviation) + median;
+            double lowerLimit = median - (standardDeviationMultiple * standardDeviation);
 
-        //    for (int i = 0; i < length; i++)
-        //    {
-        //        if (data[i, index] <= upperLimit && data[i, index] >= lowerLimit)
-        //        {
-        //            double[] newValue = data[i];
-        //        }
+            for (int i = 0; i < length; i++)
+            {
+                double value = data[i][index];
+                //If the value is within range do nothing, if not zero this value so we ignore it
+                if (value >= upperLimit || value <= lowerLimit)
+                {
+                    data[i][index] = double.NaN;
+                    removedEntries++;
+                }
+            }
 
-        //    }
-
-        //    return data;
-        //}
+            return removedEntries;
+        }
 
         //Remove all outliers that are > 1 + Percentile or < 1 - percentile from the average
         public static List<double[]> RemoveOutliers(List<double[]> unconditionedData, double standardDeviationMultiple)
@@ -584,7 +600,7 @@ namespace DataAnalyser
 
                     this.Style.BackColor = HSVtoRGB(H, S, B); ;
 
-                }
+                } 
 
             }
         }
@@ -971,6 +987,11 @@ namespace DataAnalyser
         }
 
         private void UComboBox_DragLeave(object sender, EventArgs e)
+        {
+
+        }
+
+        private void UAxisMultiplierTextBox_TextChanged(object sender, EventArgs e)
         {
 
         }
