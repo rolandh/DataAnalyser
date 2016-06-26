@@ -73,6 +73,8 @@
             this.hptTab = new System.Windows.Forms.TabPage();
             this.fordPCMHelper = new FordPCMEditor.FordPCMHelper();
             this.LoadButton = new System.Windows.Forms.Button();
+            this.label15 = new System.Windows.Forms.Label();
+            this.ignoreCellTextBox = new System.Windows.Forms.TextBox();
             this.pcmSimulator1 = new DataAnalyser.PCMSimulator();
             this.tabControl1.SuspendLayout();
             this.PlotTab.SuspendLayout();
@@ -98,6 +100,8 @@
             // 
             // PlotTab
             // 
+            this.PlotTab.Controls.Add(this.label15);
+            this.PlotTab.Controls.Add(this.ignoreCellTextBox);
             this.PlotTab.Controls.Add(this.label13);
             this.PlotTab.Controls.Add(this.label14);
             this.PlotTab.Controls.Add(this.usd);
@@ -543,6 +547,23 @@
             this.LoadButton.UseVisualStyleBackColor = true;
             this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(665, 11);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(77, 13);
+            this.label15.TabIndex = 44;
+            this.label15.Text = "Ignore Cells  < ";
+            // 
+            // ignoreCellTextBox
+            // 
+            this.ignoreCellTextBox.Location = new System.Drawing.Point(748, 7);
+            this.ignoreCellTextBox.Name = "ignoreCellTextBox";
+            this.ignoreCellTextBox.Size = new System.Drawing.Size(38, 20);
+            this.ignoreCellTextBox.TabIndex = 43;
+            this.ignoreCellTextBox.Text = "50";
+            // 
             // pcmSimulator1
             // 
             this.pcmSimulator1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -621,6 +642,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox ysd;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox ignoreCellTextBox;
     }
 }
 

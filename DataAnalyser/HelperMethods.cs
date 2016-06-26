@@ -254,7 +254,7 @@ namespace DataAnalyser
                 var currentStack = new System.Diagnostics.StackTrace(true);
                 string stackTrace = currentStack.ToString();
 
-                FlexibleMessageBox.Show("Failed to open file. Stacktrace: " + Environment.NewLine + stackTrace,
+                FlexibleMessageBox.Show("Failed to open file due to error: " + e.Message + Environment.NewLine + "Stacktrace: " + Environment.NewLine + stackTrace,
                                      "Error",
                                      MessageBoxButtons.OK,
                                      MessageBoxIcon.Information,

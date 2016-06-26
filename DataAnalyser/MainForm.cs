@@ -115,23 +115,30 @@ namespace DataAnalyser
             }
 
             double minY = data.secondaryData.Min();
+            minY = double.MaxValue;
+            for (int index = 0; index < data.secondaryData.Length; index++) if (data.secondaryData[index] < minY) minY = data.secondaryData[index];
+
             double maxY = data.secondaryData.Max();
 
             double Range = maxY - minY;
             List<String> rows = new List<string>();
             val = minY;
             numberOfCells = Math.Min(10, data.secondaryData.Length);
+
+            List<Double> rowDoubles = new List<Double>();
+
             for (int y = 0; y < numberOfCells; y++)
             {
                 rows.Add(String.Format("{0:0.00}", val));
+                rowDoubles.Add(val);
                 val += Range / (double)numberOfCells;
             }
 
             secondaryYValues = new double[rows.Count];
             i = 0;
-            foreach (string row in rows)
+            foreach (double row in rowDoubles)
             {
-                secondaryYValues[i] = Convert.ToDouble(row);
+                secondaryYValues[i] = row;
                 i++;
             }
             SecondaryGridView.RowHeadersWidth = 60;
@@ -269,41 +276,11 @@ namespace DataAnalyser
             double yMult = 1.0;
             double xMult = 1.0;
             double zMult = 1.0;
-            try
-            {
-                uMult = Convert.ToDouble(UAxisMultiplierTextBox.Text);
-            }
-            catch (Exception)
-            {
-                uMult = 1.0;
-            }
 
-            try
-            {
-                yMult = Convert.ToDouble(YAxisMultiplierTextBox.Text);
-            }
-            catch (Exception)
-            {
-                yMult = 1.0;
-            }
-
-            try
-            {
-                xMult = Convert.ToDouble(XAxisMultiplierTextBox.Text);
-            }
-            catch (Exception)
-            {
-                xMult = 1.0;
-            }
-
-            try
-            {
-                zMult = Convert.ToDouble(ZAxisMultiplierTextBox.Text);
-            }
-            catch (Exception)
-            {
-                zMult = 1.0;
-            }
+            if (!double.TryParse(UAxisMultiplierTextBox.Text, out uMult)) uMult = 1.0;
+            if (!double.TryParse(YAxisMultiplierTextBox.Text, out yMult)) yMult = 1.0;
+            if (!double.TryParse(XAxisMultiplierTextBox.Text, out xMult)) xMult = 1.0;
+            if (!double.TryParse(ZAxisMultiplierTextBox.Text, out zMult)) zMult = 1.0;
 
             double[][] csvDataCopy = csvData.Select(a => a.ToArray()).ToArray();
 
@@ -311,10 +288,9 @@ namespace DataAnalyser
 
             if(double.TryParse(xsd.Text, out xsdignore)) RemoveOutliers(ref csvDataCopy, xIndex, xsdignore);
             if(double.TryParse(ysd.Text, out ysdignore)) RemoveOutliers(ref csvDataCopy, xIndex, ysdignore);
-            if (double.TryParse(zsd.Text, out zsdignore)) RemoveOutliers(ref csvDataCopy, zIndex, zsdignore);
+            if(double.TryParse(zsd.Text, out zsdignore)) RemoveOutliers(ref csvDataCopy, zIndex, zsdignore);
             if(double.TryParse(usd.Text, out usdignore)) RemoveOutliers(ref csvDataCopy, uIndex, usdignore);
 
-            //csvData = RemoveOutliers(csvData, uIndex, 0.95);
 
             //Iterate each time sample and add it to the appropriate x,y list
             int numberOfSamples = csvDataCopy.Length;
@@ -364,6 +340,10 @@ namespace DataAnalyser
 
             range = maxZ - minZ;
 
+            //Do not display cells with a count below this level
+            double ignoreCount;
+            if (!double.TryParse(ignoreCellTextBox.Text, out ignoreCount)) ignoreCount = 0.0;
+
             for (i = 0; i < MainGridViewyValues.Length; i++)
             {
                 DataGridViewRow row = new DataGridViewRow();
@@ -380,9 +360,10 @@ namespace DataAnalyser
                         secondaryArray[k] = MainGridViewData[j, i][k][1];
                     }
 
-                    DataGridViewTuningCell cell = new DataGridViewTuningCell(secondaryArray, primaryArray, range, minZ);
+                    DataGridViewTuningCell cell = new DataGridViewTuningCell(secondaryArray, primaryArray, range, minZ, DataGridViewTuningCell.CellFormat.Average, ignoreCount);
 
                     row.Cells.Add(cell);
+
                 }
 
 
@@ -401,9 +382,11 @@ namespace DataAnalyser
                 if (HelperMethods.IsValidDouble(value[0]) && HelperMethods.IsValidDouble(value[1])) conditionedData.Add(value);
             }
 
-            return conditionedData;
+            return 
+                conditionedData;
         }
 
+        //Remove all outliers that are > 1 + Percentile or < 1 - percentile from the average
         public static int RemoveOutliers(ref double[][] data, int index, double standardDeviationMultiple)
         {
             int removedEntries = 0;
@@ -455,61 +438,55 @@ namespace DataAnalyser
             return removedEntries;
         }
 
-        //Remove all outliers that are > 1 + Percentile or < 1 - percentile from the average
-        public static List<double[]> RemoveOutliers(List<double[]> unconditionedData, double standardDeviationMultiple)
-        {
-            //Firstly remove all NaN, Infinity, null variables
-            List<double[]> conditionedData = ConditionData(unconditionedData);
-            List<double[]> returnData = new List<double[]>();
+        ////Remove all outliers that are > 1 + Percentile or < 1 - percentile from the average
+        //public static List<double[]> RemoveOutliers(List<double[]> unconditionedData, double standardDeviationMultiple)
+        //{
+        //    //Firstly remove all NaN, Infinity, null variables
+        //    List<double[]> conditionedData = ConditionData(unconditionedData);
+        //    List<double[]> returnData = new List<double[]>();
 
-            //Split into two seperate arrays
-            List<double> array1 = new List<double>();
-            List<double> array2 = new List<double>();
+        //    //Split into two seperate arrays
+        //    List<double> array1 = new List<double>();
+        //    List<double> array2 = new List<double>();
 
-            for(int i = 0; i < unconditionedData.Count; i++)
-            {
-                array1.Add(unconditionedData[i][0]);
-                array2.Add(unconditionedData[i][1]);
-            }
+        //    for(int i = 0; i < unconditionedData.Count; i++)
+        //    {
+        //        array1.Add(unconditionedData[i][0]);
+        //        array2.Add(unconditionedData[i][1]);
+        //    }
 
-            if (array1.Count == 0 || array1.Count == 0) return conditionedData;
+        //    if (array1.Count == 0 || array1.Count == 0) return conditionedData;
 
-            double median1 = HelperMethods.Median(array1);
-            double median2 = HelperMethods.Median(array2);
+        //    double median1 = HelperMethods.Median(array1);
+        //    double median2 = HelperMethods.Median(array2);
 
-            double average1 = array1.Average();
-            double average2 = array2.Average();
+        //    double average1 = array1.Average();
+        //    double average2 = array2.Average();
 
-            double sumOfSquaresOfDifferences1 = array1.Select(val => (val - average1) * (val - average1)).Sum();
-            double sumOfSquaresOfDifferences2 = array2.Select(val => (val - average2) * (val - average2)).Sum();
+        //    double sumOfSquaresOfDifferences1 = array1.Select(val => (val - average1) * (val - average1)).Sum();
+        //    double sumOfSquaresOfDifferences2 = array2.Select(val => (val - average2) * (val - average2)).Sum();
 
-            double standardDeviation1 = Math.Sqrt(sumOfSquaresOfDifferences1 / array1.Count);
-            double standardDeviation2 = Math.Sqrt(sumOfSquaresOfDifferences2 / array2.Count);
+        //    double standardDeviation1 = Math.Sqrt(sumOfSquaresOfDifferences1 / array1.Count);
+        //    double standardDeviation2 = Math.Sqrt(sumOfSquaresOfDifferences2 / array2.Count);
 
-            //Remove any value > or < standardDeviationMultiple*standardDeviation1 from the median
-            double upperLimit1 = (standardDeviationMultiple * standardDeviation1) + median1;
-            double lowerLimit1 = median1 - (standardDeviationMultiple * -standardDeviation1);
+        //    //Remove any value > or < standardDeviationMultiple*standardDeviation1 from the median
+        //    double upperLimit1 = (standardDeviationMultiple * standardDeviation1) + median1;
+        //    double lowerLimit1 = median1 - (standardDeviationMultiple * -standardDeviation1);
 
-            double upperLimit2 = (standardDeviationMultiple * standardDeviation2) + median2;
-            double lowerLimit2 = median2 - (standardDeviationMultiple * -standardDeviation2);
+        //    double upperLimit2 = (standardDeviationMultiple * standardDeviation2) + median2;
+        //    double lowerLimit2 = median2 - (standardDeviationMultiple * -standardDeviation2);
 
-            foreach (double[] value in unconditionedData)
-            {
-                if (value[0] < 0.05)
-                {
-                    int test = 1;
-                }
-                if ((value[0] <= upperLimit1 && value[0] >= lowerLimit1) && (value[1] <= upperLimit2 && value[1] >= lowerLimit2))
-                {
-                    returnData.Add(value);
-                } else
-                {
-                    int test2 = 0;
-                }
-            }
+        //    foreach (double[] value in unconditionedData)
+        //    {
 
-            return returnData;
-        }
+        //        if ((value[0] <= upperLimit1 && value[0] >= lowerLimit1) && (value[1] <= upperLimit2 && value[1] >= lowerLimit2))
+        //        {
+        //            returnData.Add(value);
+        //        }
+        //    }
+
+        //    return returnData;
+        //}
 
 
 
@@ -531,28 +508,30 @@ namespace DataAnalyser
             public double min;
             public double max;
             public int count;
-            public readonly DataGridViewTuningCellFormat cellFormat = DataGridViewTuningCellFormat.Uninitialized;
+            public readonly CellFormat cellFormat = CellFormat.Uninitialized;
             public double[] data = new double[0];
             public double[] secondaryData = new double[0];
             public double range;
             public double offset;
+            public double ignoreCellCount;
 
             public DataGridViewTuningCell()
             {
             }
 
-            public DataGridViewTuningCell(double[] secondaryDataInput, double[] doubleArray, double range, double offset, DataGridViewTuningCellFormat format = DataGridViewTuningCellFormat.Average)
+            public DataGridViewTuningCell(double[] secondaryDataInput, double[] doubleArray, double range, double offset, CellFormat format = CellFormat.Average, double ignoreCellCount = 0.0)
             {
                 this.data = doubleArray;
                 this.secondaryData = secondaryDataInput;
                 this.range = range;
                 this.offset = offset;
                 this.count = doubleArray.Length;
+                this.ignoreCellCount = ignoreCellCount;
                 SetFormat(format, range, offset);
 
             }
 
-            public enum DataGridViewTuningCellFormat
+            public enum CellFormat
             {
                 Uninitialized = -1,
                 Average = 0,
@@ -562,7 +541,7 @@ namespace DataAnalyser
                 Count = 4,
             }
 
-            public void SetFormat(DataGridViewTuningCellFormat newFormat, double _colourRange, double _colourOffset)
+            public void SetFormat(CellFormat newFormat, double _colourRange, double _colourOffset)
             {
                 this.colourRange = _colourRange;
                 this.colourOffset = _colourOffset;
@@ -581,13 +560,13 @@ namespace DataAnalyser
 
                 double dataVal = 0.0;
 
-                if (newFormat == DataGridViewTuningCellFormat.Average) dataVal = average;
-                else if (newFormat == DataGridViewTuningCellFormat.Minimum) dataVal = min;
-                else if (newFormat == DataGridViewTuningCellFormat.Maximum) dataVal = max;
-                else if (newFormat == DataGridViewTuningCellFormat.StandardDeviation) dataVal = standardDeviation;
-                else if (newFormat == DataGridViewTuningCellFormat.Count) dataVal = count;
+                if (newFormat == CellFormat.Average) dataVal = average;
+                else if (newFormat == CellFormat.Minimum) dataVal = min;
+                else if (newFormat == CellFormat.Maximum) dataVal = max;
+                else if (newFormat == CellFormat.StandardDeviation) dataVal = standardDeviation;
+                else if (newFormat == CellFormat.Count) dataVal = count;
 
-                if (HelperMethods.IsValidDouble(dataVal))
+                if (HelperMethods.IsValidDouble(dataVal) && this.count >= this.ignoreCellCount)
                 {
                     this.Value = String.Format("{0:0.00}", dataVal);
 
@@ -792,7 +771,7 @@ namespace DataAnalyser
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
                 {
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Minimum, max - min, min);
+                    cell.SetFormat(DataGridViewTuningCell.CellFormat.Minimum, max - min, min);
                 }
             }
         }
@@ -816,7 +795,7 @@ namespace DataAnalyser
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
                 {
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Maximum, max - min, min);
+                    cell.SetFormat(DataGridViewTuningCell.CellFormat.Maximum, max - min, min);
                 }
             }
         }
@@ -840,7 +819,7 @@ namespace DataAnalyser
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
                 {
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Count, max - min, min);
+                    cell.SetFormat(DataGridViewTuningCell.CellFormat.Count, max - min, min);
                 }
             }
         }
@@ -865,7 +844,7 @@ namespace DataAnalyser
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
                 {
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.StandardDeviation, max - min, min);
+                    cell.SetFormat(DataGridViewTuningCell.CellFormat.StandardDeviation, max - min, min);
                 }
             }
         }
@@ -891,7 +870,7 @@ namespace DataAnalyser
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
                 {
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Average, max - min, min);
+                    cell.SetFormat(DataGridViewTuningCell.CellFormat.Average, max - min, min);
                 }
             }
         }

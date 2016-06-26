@@ -331,7 +331,7 @@ namespace DataAnalyser
 
             Boolean lambdaErrorIssued = false;
 
-            int samplesProcessed = 0;
+            //int samplesProcessed = 0;
             int totalCount = csvData.Length;
             //totalCount = 1200;
             //for (int i = 0; i < csvData.GetLength(0); i++)
@@ -360,10 +360,6 @@ namespace DataAnalyser
                         commandedLambda = 1.0;
                     }
 
-                    if (!HelperMethods.IsValidDouble(commandedLambda))
-                    {
-                        int test = 1;
-                    }
                 }
                 newCsvData[i][indexOfCalculatedAFR] = commandedLambda;
 
@@ -447,10 +443,6 @@ namespace DataAnalyser
 
                 newCsvData[i][indexOfPulse] = newCsvData[i][indexOfPulse] * 1000.0;
                     
-                if(rpm > 2500 && map > 30.0)
-                {
-                    int test = 1;
-                }
 
             }
                 //});
@@ -691,10 +683,6 @@ namespace DataAnalyser
                             commandedLambda = 1.0;
                         }
 
-                        if (!HelperMethods.IsValidDouble(commandedLambda))
-                        {
-                            int test = 1;
-                        }
                     }
                     newCsvData[i][indexOfCalculatedAFR] = commandedLambda;
 
