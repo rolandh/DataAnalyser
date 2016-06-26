@@ -74,10 +74,10 @@
             this.label15 = new System.Windows.Forms.Label();
             this.ignoreCellTextBox = new System.Windows.Forms.TextBox();
             this.fordPCMHelper = new FordPCMEditor.FordPCMHelper();
-            this.MainGridView = new DataAnalyser.DataTuningGrid();
-            this.pcmSimulator1 = new DataAnalyser.PCMSimulator();
             this.label16 = new System.Windows.Forms.Label();
             this.cellCountIgnoreTextBox = new System.Windows.Forms.TextBox();
+            this.MainGridView = new DataAnalyser.DataTuningGrid();
+            this.pcmSimulator1 = new DataAnalyser.PCMSimulator();
             this.tabControl1.SuspendLayout();
             this.PlotTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SecondaryGridView)).BeginInit();
@@ -555,24 +555,6 @@
             this.fordPCMHelper.Size = new System.Drawing.Size(1543, 587);
             this.fordPCMHelper.TabIndex = 0;
             // 
-            // MainGridView
-            // 
-            this.MainGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.MainGridView.Location = new System.Drawing.Point(9, 175);
-            this.MainGridView.Name = "MainGridView";
-            this.MainGridView.Size = new System.Drawing.Size(870, 412);
-            this.MainGridView.TabIndex = 45;
-            // 
-            // pcmSimulator1
-            // 
-            this.pcmSimulator1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pcmSimulator1.Location = new System.Drawing.Point(3, 3);
-            this.pcmSimulator1.Name = "pcmSimulator1";
-            this.pcmSimulator1.Size = new System.Drawing.Size(1537, 578);
-            this.pcmSimulator1.TabIndex = 0;
-            // 
             // label16
             // 
             this.label16.AutoSize = true;
@@ -588,6 +570,26 @@
             this.cellCountIgnoreTextBox.Name = "cellCountIgnoreTextBox";
             this.cellCountIgnoreTextBox.Size = new System.Drawing.Size(38, 20);
             this.cellCountIgnoreTextBox.TabIndex = 47;
+            // 
+            // MainGridView
+            // 
+            this.MainGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.MainGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.MainGridView.Location = new System.Drawing.Point(9, 175);
+            this.MainGridView.Name = "MainGridView";
+            this.MainGridView.Size = new System.Drawing.Size(870, 412);
+            this.MainGridView.TabIndex = 45;
+            // 
+            // pcmSimulator1
+            // 
+            this.pcmSimulator1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pcmSimulator1.Location = new System.Drawing.Point(3, 3);
+            this.pcmSimulator1.Name = "pcmSimulator1";
+            this.pcmSimulator1.Size = new System.Drawing.Size(1537, 578);
+            this.pcmSimulator1.TabIndex = 0;
             // 
             // MainForm
             // 

@@ -38,7 +38,7 @@ namespace DataAnalyser
                 if((start < end) && (step >= 0.0))
                 {
                     newAxis = GenerateAxis(start, end, step);
-                    UpdateText(newAxis);
+                    UpdateText(newAxis, step);
                     return;
                 }
                 
@@ -46,7 +46,7 @@ namespace DataAnalyser
             MessageBox.Show("Error: invalid entry", "Error");
         }
 
-        public void UpdateText(Double [] axis)
+        public void UpdateText(Double [] axis, double step = 0.0)
         {
             if (axis == null)
             {
@@ -72,7 +72,12 @@ namespace DataAnalyser
             double offset = 0;
             if(axis.Min() < 0) offset = axis.Min();
 
-            stepMaskedTextBox.Text = ((int)((axis.Max()- offset) / Math.Abs(axis.Min()))).ToString();
+
+            if (step != 0.0) stepMaskedTextBox.Text = step.ToString();
+            else {
+                if (axis.Length > 1) stepMaskedTextBox.Text = ((axis.Max() - axis.Min()) / axis.Length).ToString();
+                else stepMaskedTextBox.Text = "";
+            }
         }
 
 
