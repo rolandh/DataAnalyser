@@ -198,7 +198,7 @@ namespace DataAnalyser
                         double S = 0.9;
                         double B = 0.92;
 
-                        cell.Style.BackColor = HSVtoRGB(H, S, B); ;
+                        cell.Style.BackColor = HelperMethods.HSVtoRGB(H, S, B); ;
                     }
                     else
                     {
@@ -316,34 +316,36 @@ namespace DataAnalyser
             }
 
             //Calculate our max Z value
-            for (i = 0; i < MainGridViewyValues.Length; i++)
-            {
-                for (int j = 0; j < MainGridViewxValues.Length; j++)
-                {
-                    //MainGridViewData[j, i] = RemoveOutliers(MainGridViewData[j, i], 3.0);
+            //for (i = 0; i < MainGridViewyValues.Length; i++)
+            //{
+            //    for (int j = 0; j < MainGridViewxValues.Length; j++)
+            //    {
+            //        //MainGridViewData[j, i] = RemoveOutliers(MainGridViewData[j, i], 3.0);
 
-                    List<double[]> list = MainGridViewData[j, i];
-                    double[] doubleArray = new double[list.Count];
-                    for (int k = 0; k < doubleArray.Length; k++) doubleArray[k] = list[k][0];
+            //        List<double[]> list = MainGridViewData[j, i];
+            //        double[] doubleArray = new double[list.Count];
+            //        for (int k = 0; k < doubleArray.Length; k++) doubleArray[k] = list[k][0];
 
-                    if (doubleArray.Length != 0)
-                    {
-                        double average = doubleArray.Average();
+            //        if (doubleArray.Length != 0)
+            //        {
+            //            double average = doubleArray.Average();
 
-                        if (HelperMethods.IsValidDouble(average))
-                        {
-                            if (average > maxZ) maxZ = average;
-                            if (average < minZ) minZ = average;
-                        }
-                    }
-                }
-            }
+            //            if (HelperMethods.IsValidDouble(average))
+            //            {
+            //                if (average > maxZ) maxZ = average;
+            //                if (average < minZ) minZ = average;
+            //            }
+            //        }
+            //    }
+            //}
 
-            range = maxZ - minZ;
+            //range = maxZ - minZ;
 
             //Do not display cells with a count below this level
             double ignoreValue;
-            if (!double.TryParse(ignoreCellTextBox.Text, out ignoreValue)) ignoreValue = 0.0;
+            if (!double.TryParse(ignoreCellTextBox.Text, out ignoreValue)) ignoreValue = Double.MinValue;
+            double ignoreCellCount;
+            if (!double.TryParse(cellCountIgnoreTextBox.Text, out ignoreCellCount)) ignoreCellCount = 0.0;
 
             for (i = 0; i < MainGridViewyValues.Length; i++)
             {
@@ -361,7 +363,9 @@ namespace DataAnalyser
                         secondaryArray[k] = MainGridViewData[j, i][k][1];
                     }
 
-                    DataGridViewTuningCell cell = new DataGridViewTuningCell(secondaryArray, primaryArray, range, minZ, currentMode, ignoreValue);
+                    if (primaryArray.Length < ignoreCellCount) primaryArray = new double[0];
+
+                    DataGridViewTuningCell cell = new DataGridViewTuningCell(secondaryArray, primaryArray, range, minZ, MainGridView.currentMode, ignoreValue);
 
                     row.Cells.Add(cell);
 
@@ -371,6 +375,8 @@ namespace DataAnalyser
                 MainGridView.Rows.Add(row);
             }
             MainGridView.RowHeadersWidth = 60;
+
+            MainGridView.SetFormat(MainGridView.currentMode, true);
         }
 
 
@@ -489,103 +495,7 @@ namespace DataAnalyser
         //    return returnData;
         //}
 
-        //Todo this should go in a Custom Datagrid
-        DataGridViewTuningCell.CellFormat currentMode = DataGridViewTuningCell.CellFormat.Average;
-
-        public class DataGridViewTuningColumn : DataGridViewTextBoxColumn
-        {
-            public DataGridViewTuningColumn()
-            {
-                this.CellTemplate = new DataGridViewTuningCell();
-            }
-        }
-
-        public class DataGridViewTuningCell : DataGridViewTextBoxCell
-        {
-            public double average;
-            public double standardDeviation;
-            public double colourRange;
-            public double colourOffset;
-
-            public double min;
-            public double max;
-            public int count;
-            public readonly CellFormat cellFormat = CellFormat.Uninitialized;
-            public double[] data = new double[0];
-            public double[] secondaryData = new double[0];
-            public double range;
-            public double offset;
-            public double ignoreValue;
-            public bool cellCurrentlyIgnored = false;
-
-            public DataGridViewTuningCell()
-            {
-            }
-
-            public DataGridViewTuningCell(double[] secondaryDataInput, double[] doubleArray, double range, double offset, CellFormat format = CellFormat.Average, double ignoreValue = Double.MinValue)
-            {
-                this.data = doubleArray;
-                this.secondaryData = secondaryDataInput;
-                this.range = range;
-                this.offset = offset;
-                this.count = doubleArray.Length;
-                this.ignoreValue = ignoreValue;
-                SetFormat(format, range, offset);
-
-            }
-
-            public enum CellFormat
-            {
-                Uninitialized = -1,
-                Average = 0,
-                StandardDeviation = 1,
-                Minimum = 2,
-                Maximum = 3,
-                Count = 4,
-            }
-
-            public void SetFormat(CellFormat newFormat, double _colourRange, double _colourOffset)
-            {
-                this.colourRange = _colourRange;
-                this.colourOffset = _colourOffset;
-
-                if (newFormat == cellFormat) return;
-
-                this.Value = "";
-                if (data.Length == 0) return;
-
-                average = data.Average();
-                min = data.Min();
-                max = data.Max();
-
-                double sumOfSquaresOfDifferences = data.Select(val => (val - average) * (val - average)).Sum();
-                this.standardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / data.Length);
-
-                double dataVal = 0.0;
-
-                if (newFormat == CellFormat.Average) dataVal = average;
-                else if (newFormat == CellFormat.Minimum) dataVal = min;
-                else if (newFormat == CellFormat.Maximum) dataVal = max;
-                else if (newFormat == CellFormat.StandardDeviation) dataVal = standardDeviation;
-                else if (newFormat == CellFormat.Count) dataVal = count;
-
-                if (HelperMethods.IsValidDouble(dataVal) && dataVal >= this.ignoreValue)
-                {
-                    this.Value = String.Format("{0:0.00}", dataVal);
-
-                    double scalar = 360.0 / colourRange;
-                    double value = scalar * (dataVal - colourOffset);
-
-                    double H = (0.4 * (360.0 - value)) - 10.0;
-                    double S = 0.9;
-                    double B = 0.92;
-
-                    this.Style.BackColor = HSVtoRGB(H, S, B); ;
-
-                } 
-
-            }
-        }
+  
 
 
 
@@ -757,130 +667,27 @@ namespace DataAnalyser
 
         private void minButton_Click(object sender, EventArgs e)
         {
-            double min = double.MaxValue;
-            double max = double.MinValue;
-            currentMode = DataGridViewTuningCell.CellFormat.Minimum;
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    if (cell.data.Length > 0)
-                    {
-                        if (cell.min < min) min = cell.min;
-                        if (cell.min > max) max = cell.min;
-                    }
-                }
-            }
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    cell.SetFormat(DataGridViewTuningCell.CellFormat.Minimum, max - min, min);
-                }
-            }
+            MainGridView.SetFormat(CellFormat.Minimum);
         }
 
         private void maxButton_Click(object sender, EventArgs e)
         {
-            double min = double.MaxValue;
-            double max = double.MinValue;
-            currentMode = DataGridViewTuningCell.CellFormat.Maximum;
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    if (cell.data.Length > 0)
-                    {
-                        if (cell.max < min) min = cell.max;
-                        if (cell.max > max) max = cell.max;
-                    }
-                }
-            }
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    cell.SetFormat(DataGridViewTuningCell.CellFormat.Maximum, max - min, min);
-                }
-            }
+           MainGridView.SetFormat(CellFormat.Maximum);
         }
 
         private void countButton_Click(object sender, EventArgs e)
         {
-            double min = double.MaxValue;
-            double max = double.MinValue;
-            currentMode = DataGridViewTuningCell.CellFormat.Count;
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    if (cell.data.Length > 0)
-                    {
-                        if (cell.count < min) min = (double)cell.count;
-                        if (cell.count > max) max = (double)cell.count;
-                    }
-                }
-            }
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    cell.SetFormat(DataGridViewTuningCell.CellFormat.Count, max - min, min);
-                }
-            }
+            MainGridView.SetFormat(CellFormat.Count);
         }
 
         private void SDButton_Click(object sender, EventArgs e)
         {
-            //Update the range for the colour calculation
-            double min = double.MaxValue;
-            double max = double.MinValue;
-            currentMode = DataGridViewTuningCell.CellFormat.StandardDeviation;
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    if(cell.data.Length > 0){
-                        if (cell.standardDeviation < min) min = cell.standardDeviation;
-                        if (cell.standardDeviation > max) max = cell.standardDeviation;
-                    }
-                }
-            }
-
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    cell.SetFormat(DataGridViewTuningCell.CellFormat.StandardDeviation, max - min, min);
-                }
-            }
+            MainGridView.SetFormat(CellFormat.StandardDeviation);
         }
 
         private void averageButton_Click(object sender, EventArgs e)
         {
-            double min = double.MaxValue;
-            double max = double.MinValue;
-            currentMode = DataGridViewTuningCell.CellFormat.Average;
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    if (cell.data.Length > 0)
-                    {
-                        if (cell.average < min) min = cell.average;
-                        if (cell.average > max) max = cell.average;
-                    }
-
-
-                }
-            }
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    cell.SetFormat(DataGridViewTuningCell.CellFormat.Average, max - min, min);
-                }
-            }
+            MainGridView.SetFormat(CellFormat.Average);
         }
 
         private void checkPulseButton_Click(object sender, EventArgs e)
@@ -923,55 +730,6 @@ namespace DataAnalyser
             PopulateMainGridView(xAxisComboBox.Text, yAxisComboBox.Text, zAxisComboBox.Text, UComboBox.Text);
         }
 
-        public static Color HSVtoRGB(double h, double s, double v)
-        {
-            double r, g, b, f, p, q, t;
-            int i = 0;
-            if (s == 0)
-            {
-                return Color.FromArgb((byte)(v * 255.0), (byte)(v * 255.0), (byte)(v * 255.0));
-            }
-            h /= 60;            // sector 0 to 5
-            i = (int)Math.Floor(h);
-            f = h - i;          // factorial part of h
-            p = v * (1.0 - s);
-            q = v * (1.0 - s * f);
-            t = v * (1.0 - s * (1.0 - f));
-            switch ((int)i)
-            {
-                case 0:
-                    r = v;
-                    g = t;
-                    b = p;
-                    break;
-                case 1:
-                    r = q;
-                    g = v;
-                    b = p;
-                    break;
-                case 2:
-                    r = p;
-                    g = v;
-                    b = t;
-                    break;
-                case 3:
-                    r = p;
-                    g = q;
-                    b = v;
-                    break;
-                case 4:
-                    r = t;
-                    g = p;
-                    b = v;
-                    break;
-                default:        // case 5:
-                    r = v;
-                    g = p;
-                    b = q;
-                    break;
-            }
-            return Color.FromArgb((byte)(r * 255.0), (byte)(g * 255.0), (byte)(b * 255.0));
-        }
 
         private void UComboBox_DragLeave(object sender, EventArgs e)
         {

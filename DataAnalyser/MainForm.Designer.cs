@@ -68,20 +68,22 @@
             this.maxButton = new System.Windows.Forms.Button();
             this.minButton = new System.Windows.Forms.Button();
             this.SecondaryGridView = new System.Windows.Forms.DataGridView();
-            this.MainGridView = new System.Windows.Forms.DataGridView();
             this.CalculateTab = new System.Windows.Forms.TabPage();
             this.hptTab = new System.Windows.Forms.TabPage();
-            this.fordPCMHelper = new FordPCMEditor.FordPCMHelper();
             this.LoadButton = new System.Windows.Forms.Button();
             this.label15 = new System.Windows.Forms.Label();
             this.ignoreCellTextBox = new System.Windows.Forms.TextBox();
+            this.fordPCMHelper = new FordPCMEditor.FordPCMHelper();
+            this.MainGridView = new DataAnalyser.DataTuningGrid();
             this.pcmSimulator1 = new DataAnalyser.PCMSimulator();
+            this.label16 = new System.Windows.Forms.Label();
+            this.cellCountIgnoreTextBox = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.PlotTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SecondaryGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MainGridView)).BeginInit();
             this.CalculateTab.SuspendLayout();
             this.hptTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.MainGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -100,6 +102,9 @@
             // 
             // PlotTab
             // 
+            this.PlotTab.Controls.Add(this.label16);
+            this.PlotTab.Controls.Add(this.cellCountIgnoreTextBox);
+            this.PlotTab.Controls.Add(this.MainGridView);
             this.PlotTab.Controls.Add(this.label15);
             this.PlotTab.Controls.Add(this.ignoreCellTextBox);
             this.PlotTab.Controls.Add(this.label13);
@@ -140,7 +145,6 @@
             this.PlotTab.Controls.Add(this.maxButton);
             this.PlotTab.Controls.Add(this.minButton);
             this.PlotTab.Controls.Add(this.SecondaryGridView);
-            this.PlotTab.Controls.Add(this.MainGridView);
             this.PlotTab.Location = new System.Drawing.Point(4, 22);
             this.PlotTab.Name = "PlotTab";
             this.PlotTab.Padding = new System.Windows.Forms.Padding(3);
@@ -378,7 +382,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(795, 6);
+            this.button1.Location = new System.Drawing.Point(795, 7);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 15;
@@ -494,18 +498,6 @@
             this.SecondaryGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.SecondaryGridView_ColumnHeaderMouseClick);
             this.SecondaryGridView.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.SecondaryGridView_RowHeaderMouseClick);
             // 
-            // MainGridView
-            // 
-            this.MainGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.MainGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.MainGridView.Location = new System.Drawing.Point(5, 175);
-            this.MainGridView.Name = "MainGridView";
-            this.MainGridView.Size = new System.Drawing.Size(865, 412);
-            this.MainGridView.TabIndex = 1;
-            this.MainGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_ColumnHeaderMouseClick);
-            this.MainGridView.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_RowHeaderMouseClick);
-            // 
             // CalculateTab
             // 
             this.CalculateTab.Controls.Add(this.pcmSimulator1);
@@ -527,16 +519,6 @@
             this.hptTab.Text = "HPT File Viewer";
             this.hptTab.UseVisualStyleBackColor = true;
             // 
-            // fordPCMHelper
-            // 
-            this.fordPCMHelper.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.fordPCMHelper.Location = new System.Drawing.Point(6, 0);
-            this.fordPCMHelper.Name = "fordPCMHelper";
-            this.fordPCMHelper.Size = new System.Drawing.Size(1543, 587);
-            this.fordPCMHelper.TabIndex = 0;
-            // 
             // LoadButton
             // 
             this.LoadButton.Location = new System.Drawing.Point(12, 11);
@@ -550,7 +532,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(665, 11);
+            this.label15.Location = new System.Drawing.Point(668, 11);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(77, 13);
             this.label15.TabIndex = 44;
@@ -558,10 +540,28 @@
             // 
             // ignoreCellTextBox
             // 
-            this.ignoreCellTextBox.Location = new System.Drawing.Point(748, 7);
+            this.ignoreCellTextBox.Location = new System.Drawing.Point(751, 7);
             this.ignoreCellTextBox.Name = "ignoreCellTextBox";
             this.ignoreCellTextBox.Size = new System.Drawing.Size(38, 20);
             this.ignoreCellTextBox.TabIndex = 43;
+            // 
+            // fordPCMHelper
+            // 
+            this.fordPCMHelper.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.fordPCMHelper.Location = new System.Drawing.Point(6, 0);
+            this.fordPCMHelper.Name = "fordPCMHelper";
+            this.fordPCMHelper.Size = new System.Drawing.Size(1543, 587);
+            this.fordPCMHelper.TabIndex = 0;
+            // 
+            // MainGridView
+            // 
+            this.MainGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.MainGridView.Location = new System.Drawing.Point(9, 175);
+            this.MainGridView.Name = "MainGridView";
+            this.MainGridView.Size = new System.Drawing.Size(870, 412);
+            this.MainGridView.TabIndex = 45;
             // 
             // pcmSimulator1
             // 
@@ -572,6 +572,22 @@
             this.pcmSimulator1.Name = "pcmSimulator1";
             this.pcmSimulator1.Size = new System.Drawing.Size(1537, 578);
             this.pcmSimulator1.TabIndex = 0;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(488, 11);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(130, 13);
+            this.label16.TabIndex = 48;
+            this.label16.Text = "Ignore Cells With Count < ";
+            // 
+            // cellCountIgnoreTextBox
+            // 
+            this.cellCountIgnoreTextBox.Location = new System.Drawing.Point(624, 6);
+            this.cellCountIgnoreTextBox.Name = "cellCountIgnoreTextBox";
+            this.cellCountIgnoreTextBox.Size = new System.Drawing.Size(38, 20);
+            this.cellCountIgnoreTextBox.TabIndex = 47;
             // 
             // MainForm
             // 
@@ -586,9 +602,9 @@
             this.PlotTab.ResumeLayout(false);
             this.PlotTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SecondaryGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MainGridView)).EndInit();
             this.CalculateTab.ResumeLayout(false);
             this.hptTab.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.MainGridView)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -609,7 +625,6 @@
         private System.Windows.Forms.Button maxButton;
         private System.Windows.Forms.Button minButton;
         private System.Windows.Forms.DataGridView SecondaryGridView;
-        private System.Windows.Forms.DataGridView MainGridView;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ComboBox zAxisComboBox;
         private System.Windows.Forms.Label label1;
@@ -643,6 +658,9 @@
         private System.Windows.Forms.TextBox ysd;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox ignoreCellTextBox;
+        private DataTuningGrid MainGridView;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox cellCountIgnoreTextBox;
     }
 }
 

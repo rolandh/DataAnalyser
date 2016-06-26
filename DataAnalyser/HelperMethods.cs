@@ -6,12 +6,61 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using JR.Utils.GUI.Forms;
+using System.Drawing;
 
 namespace DataAnalyser
 {
     public static class HelperMethods
     {
-
+        public static Color HSVtoRGB(double h, double s, double v)
+        {
+            double r, g, b, f, p, q, t;
+            int i = 0;
+            if (s == 0)
+            {
+                return Color.FromArgb((byte)(v * 255.0), (byte)(v * 255.0), (byte)(v * 255.0));
+            }
+            h /= 60;            // sector 0 to 5
+            i = (int)Math.Floor(h);
+            f = h - i;          // factorial part of h
+            p = v * (1.0 - s);
+            q = v * (1.0 - s * f);
+            t = v * (1.0 - s * (1.0 - f));
+            switch ((int)i)
+            {
+                case 0:
+                    r = v;
+                    g = t;
+                    b = p;
+                    break;
+                case 1:
+                    r = q;
+                    g = v;
+                    b = p;
+                    break;
+                case 2:
+                    r = p;
+                    g = v;
+                    b = t;
+                    break;
+                case 3:
+                    r = p;
+                    g = q;
+                    b = v;
+                    break;
+                case 4:
+                    r = t;
+                    g = p;
+                    b = v;
+                    break;
+                default:        // case 5:
+                    r = v;
+                    g = p;
+                    b = q;
+                    break;
+            }
+            return Color.FromArgb((byte)(r * 255.0), (byte)(g * 255.0), (byte)(b * 255.0));
+        }
 
         private static double Mean(double[][] values, int index, int start, int end)
         {
