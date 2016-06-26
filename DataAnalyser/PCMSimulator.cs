@@ -97,30 +97,31 @@ namespace DataAnalyser
 
             var progressIndicator = new Progress<int>(ReportProgress);
             cts = new CancellationTokenSource();
-            //try
-            //{
-                //await EmulatePCM(progressIndicator, cts.Token);
+            try
+            {
+                await EmulatePCM(progressIndicator, cts.Token);
                 EmulatePCMSync();
-            //}
-            //catch (OperationCanceledException)
-            //{
-            //    this.progressBar.Value = 0;
-            //} catch (Exception ex)
-            //{
-            //    var currentStack = new System.Diagnostics.StackTrace(true);
-            //    string stackTrace = currentStack.ToString();
+            }
+            catch (OperationCanceledException)
+            {
+                this.progressBar.Value = 0;
+            }
+            catch (Exception ex)
+            {
+                var currentStack = new System.Diagnostics.StackTrace(true);
+                string stackTrace = currentStack.ToString();
 
-            //    FlexibleMessageBox.Show("Failed to process file due to: " + Environment.NewLine + stackTrace,
-            //                         "Error",
-            //                         MessageBoxButtons.OK,
-            //                         MessageBoxIcon.Information,
-            //                         MessageBoxDefaultButton.Button2);
-            //}
-            //finally
-            //{
-            //    this.cancelButton.Enabled = false;
-            //    this.calculateAirmassButton.Enabled = true;
-            //}
+                FlexibleMessageBox.Show("Failed to process file due to: " + Environment.NewLine + stackTrace,
+                                     "Error",
+                                     MessageBoxButtons.OK,
+                                     MessageBoxIcon.Information,
+                                     MessageBoxDefaultButton.Button2);
+            }
+            finally
+            {
+                this.cancelButton.Enabled = false;
+                this.calculateAirmassButton.Enabled = true;
+            }
 
             this.progressBar.Value = 0;
 

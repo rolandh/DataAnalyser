@@ -562,7 +562,6 @@
             this.ignoreCellTextBox.Name = "ignoreCellTextBox";
             this.ignoreCellTextBox.Size = new System.Drawing.Size(38, 20);
             this.ignoreCellTextBox.TabIndex = 43;
-            this.ignoreCellTextBox.Text = "50";
             // 
             // pcmSimulator1
             // 

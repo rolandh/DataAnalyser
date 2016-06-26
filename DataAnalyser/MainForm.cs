@@ -18,6 +18,7 @@ namespace DataAnalyser
         double[] secondaryXValues;
         double[] secondaryYValues;
 
+
         List<Double[]>[,] MainGridViewData;
         int[,] SecondaryGridViewData;
 
@@ -341,8 +342,8 @@ namespace DataAnalyser
             range = maxZ - minZ;
 
             //Do not display cells with a count below this level
-            double ignoreCount;
-            if (!double.TryParse(ignoreCellTextBox.Text, out ignoreCount)) ignoreCount = 0.0;
+            double ignoreValue;
+            if (!double.TryParse(ignoreCellTextBox.Text, out ignoreValue)) ignoreValue = 0.0;
 
             for (i = 0; i < MainGridViewyValues.Length; i++)
             {
@@ -360,7 +361,7 @@ namespace DataAnalyser
                         secondaryArray[k] = MainGridViewData[j, i][k][1];
                     }
 
-                    DataGridViewTuningCell cell = new DataGridViewTuningCell(secondaryArray, primaryArray, range, minZ, DataGridViewTuningCell.CellFormat.Average, ignoreCount);
+                    DataGridViewTuningCell cell = new DataGridViewTuningCell(secondaryArray, primaryArray, range, minZ, currentMode, ignoreValue);
 
                     row.Cells.Add(cell);
 
@@ -488,7 +489,8 @@ namespace DataAnalyser
         //    return returnData;
         //}
 
-
+        //Todo this should go in a Custom Datagrid
+        DataGridViewTuningCell.CellFormat currentMode = DataGridViewTuningCell.CellFormat.Average;
 
         public class DataGridViewTuningColumn : DataGridViewTextBoxColumn
         {
@@ -513,20 +515,21 @@ namespace DataAnalyser
             public double[] secondaryData = new double[0];
             public double range;
             public double offset;
-            public double ignoreCellCount;
+            public double ignoreValue;
+            public bool cellCurrentlyIgnored = false;
 
             public DataGridViewTuningCell()
             {
             }
 
-            public DataGridViewTuningCell(double[] secondaryDataInput, double[] doubleArray, double range, double offset, CellFormat format = CellFormat.Average, double ignoreCellCount = 0.0)
+            public DataGridViewTuningCell(double[] secondaryDataInput, double[] doubleArray, double range, double offset, CellFormat format = CellFormat.Average, double ignoreValue = Double.MinValue)
             {
                 this.data = doubleArray;
                 this.secondaryData = secondaryDataInput;
                 this.range = range;
                 this.offset = offset;
                 this.count = doubleArray.Length;
-                this.ignoreCellCount = ignoreCellCount;
+                this.ignoreValue = ignoreValue;
                 SetFormat(format, range, offset);
 
             }
@@ -566,7 +569,7 @@ namespace DataAnalyser
                 else if (newFormat == CellFormat.StandardDeviation) dataVal = standardDeviation;
                 else if (newFormat == CellFormat.Count) dataVal = count;
 
-                if (HelperMethods.IsValidDouble(dataVal) && this.count >= this.ignoreCellCount)
+                if (HelperMethods.IsValidDouble(dataVal) && dataVal >= this.ignoreValue)
                 {
                     this.Value = String.Format("{0:0.00}", dataVal);
 
@@ -756,6 +759,7 @@ namespace DataAnalyser
         {
             double min = double.MaxValue;
             double max = double.MinValue;
+            currentMode = DataGridViewTuningCell.CellFormat.Minimum;
             foreach (DataGridViewRow row in MainGridView.Rows)
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
@@ -780,6 +784,7 @@ namespace DataAnalyser
         {
             double min = double.MaxValue;
             double max = double.MinValue;
+            currentMode = DataGridViewTuningCell.CellFormat.Maximum;
             foreach (DataGridViewRow row in MainGridView.Rows)
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
@@ -804,6 +809,7 @@ namespace DataAnalyser
         {
             double min = double.MaxValue;
             double max = double.MinValue;
+            currentMode = DataGridViewTuningCell.CellFormat.Count;
             foreach (DataGridViewRow row in MainGridView.Rows)
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
@@ -829,6 +835,7 @@ namespace DataAnalyser
             //Update the range for the colour calculation
             double min = double.MaxValue;
             double max = double.MinValue;
+            currentMode = DataGridViewTuningCell.CellFormat.StandardDeviation;
             foreach (DataGridViewRow row in MainGridView.Rows)
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
@@ -853,6 +860,7 @@ namespace DataAnalyser
         {
             double min = double.MaxValue;
             double max = double.MinValue;
+            currentMode = DataGridViewTuningCell.CellFormat.Average;
             foreach (DataGridViewRow row in MainGridView.Rows)
             {
                 foreach (DataGridViewTuningCell cell in row.Cells)
