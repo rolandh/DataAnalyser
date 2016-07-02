@@ -157,7 +157,8 @@ namespace DataAnalyser
         public CellFormat cellFormat = CellFormat.Uninitialized;
         public double[] data = new double[0];
         public double[] secondaryData = new double[0];
-        public double ignoreValue;
+        public double ignoreLowerLimitValue;
+        public double ignoreUpperLimitValue;
         public bool cellCurrentlyIgnored = false;
         public double min = Double.NaN;
         public double max = Double.NaN;
@@ -169,11 +170,13 @@ namespace DataAnalyser
         {
         }
 
-        public DataGridViewTuningCell(double[] secondaryDataInput, double[] doubleArray, double range, double offset, CellFormat format = CellFormat.Average, double ignoreValue = Double.MinValue)
+        public DataGridViewTuningCell(double[] secondaryDataInput, double[] doubleArray, double range, double offset, CellFormat format = CellFormat.Average, double ignoreLowerLimitValue = Double.MinValue, double ignoreUpperLimitValue = Double.MaxValue)
         {
             this.data = doubleArray;
             this.secondaryData = secondaryDataInput;
-            this.ignoreValue = ignoreValue;
+            this.ignoreLowerLimitValue = ignoreLowerLimitValue;
+            this.ignoreUpperLimitValue = ignoreUpperLimitValue;
+
             if (data.Length > 0)
             {
                 this.average = data.Average();
@@ -225,7 +228,7 @@ namespace DataAnalyser
             else if (newFormat == CellFormat.Count) dataValue = count;
             else throw new NotImplementedException();
 
-            if (HelperMethods.IsValidDouble(dataValue) && dataValue >= this.ignoreValue)
+            if (HelperMethods.IsValidDouble(dataValue) && dataValue >= this.ignoreLowerLimitValue && dataValue <= this.ignoreUpperLimitValue)
             {
                 this.Value = String.Format("{0:0.00}", dataValue);
 

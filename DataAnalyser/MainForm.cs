@@ -225,7 +225,7 @@ namespace DataAnalyser
             MainGridView.Rows.Clear();
 
             if (MainXValuesAreNullOrEmpty()) UpdateMainXAxis(ScaleForm.GenerateAxis(250.0, 6000.0, 250.0));
-            if (MainYValuesAreNullOrEmpty()) UpdateMainYAxis(ScaleForm.GenerateAxis(-10.0, 45.0, 5.0));
+            if (MainYValuesAreNullOrEmpty()) UpdateMainYAxis(ScaleForm.GenerateAxis(-10.0, 45.0, 10.0));
 
             int i = 0;
 
@@ -309,8 +309,12 @@ namespace DataAnalyser
             }
 
             //Do not display cells with a count below this level
-            double ignoreValue;
-            if (!double.TryParse(ignoreCellTextBox.Text, out ignoreValue)) ignoreValue = Double.MinValue;
+            double ignoreLowerLimitValue;
+            if (!double.TryParse(ignoreLowerLimit.Text, out ignoreLowerLimitValue)) ignoreLowerLimitValue = Double.MinValue;
+
+            double ignoreUpperLimitValue;
+            if (!double.TryParse(ignoreUpperLimit.Text, out ignoreUpperLimitValue)) ignoreUpperLimitValue = Double.MaxValue;
+
             double ignoreCellCount;
             if (!double.TryParse(cellCountIgnoreTextBox.Text, out ignoreCellCount)) ignoreCellCount = 0.0;
 
@@ -332,7 +336,7 @@ namespace DataAnalyser
 
                     if (primaryArray.Length < ignoreCellCount) primaryArray = new double[0];
 
-                    DataGridViewTuningCell cell = new DataGridViewTuningCell(secondaryArray, primaryArray, range, minZ, MainGridView.currentMode, ignoreValue);
+                    DataGridViewTuningCell cell = new DataGridViewTuningCell(secondaryArray, primaryArray, range, minZ, MainGridView.currentMode, ignoreLowerLimitValue, ignoreUpperLimitValue);
 
                     row.Cells.Add(cell);
 
