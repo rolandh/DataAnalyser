@@ -4,22 +4,20 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-//using FordPCMEditor;
-using System.IO;
-using JR.Utils.GUI.Forms;
 
 namespace DataAnalyser
 {
     public partial class MainForm : Form
     {
         string[] csvHeaders;
-        double[,] csvData;
+        double[][] csvData;
 
         double[] MainGridViewxValues;
         double[] MainGridViewyValues;
 
         double[] secondaryXValues;
         double[] secondaryYValues;
+
 
         List<Double[]>[,] MainGridViewData;
         int[,] SecondaryGridViewData;
@@ -33,36 +31,43 @@ namespace DataAnalyser
         private void LoadButton_Click(object sender, EventArgs e)
         {
 
+
             var openFileDialog = new OpenFileDialog();
             DialogResult result = openFileDialog.ShowDialog();
             if (result != DialogResult.OK) return;
 
-            if(!LoadCsv(openFileDialog.FileName)) return;
+            if(!HelperMethods.LoadCsv(openFileDialog.FileName, out csvHeaders, out csvData)) return;
 
-            xAxisComboBox.Text = "";
-            yAxisComboBox.Text = "";
-            zAxisComboBox.Text = "";
+            pcmSimulator1.csvData = null;
+            pcmSimulator1.csvHeaders = null;
 
-            //Try and auto pick the axis
+            xAxisComboBox.Items.Clear();
+            yAxisComboBox.Items.Clear();
+            UComboBox.Items.Clear();
+
             foreach (string header in csvHeaders)
             {
-                if (header.IndexOf("rpm", StringComparison.OrdinalIgnoreCase) >= 0) if(xAxisComboBox.Text.Length <= 0) xAxisComboBox.Text = header;
-                if (header.IndexOf("cam", StringComparison.OrdinalIgnoreCase) >= 0) if (yAxisComboBox.Text.Length <= 0) yAxisComboBox.Text = header;
-                if (header.IndexOf("trim", StringComparison.OrdinalIgnoreCase) >= 0) if (zAxisComboBox.Text.Length <= 0) zAxisComboBox.Text = header;
-                if (header.IndexOf("absolute pressure", StringComparison.OrdinalIgnoreCase) >= 0) if (UComboBox.Text.Length <= 0) UComboBox.Text = header;
+                xAxisComboBox.Items.Add(header);
+                yAxisComboBox.Items.Add(header);
+                zAxisComboBox.Items.Add(header);
+                UComboBox.Items.Add(header);
+            }
+
+
+            //Try and auto pick the axis if they don't already have text in them
+            foreach (string header in csvHeaders)
+            {
+                if (xAxisComboBox.Text.Length <= 0) if (header.IndexOf("rpm", StringComparison.OrdinalIgnoreCase) >= 0) if(xAxisComboBox.Text.Length <= 0) xAxisComboBox.Text = header;
+                if (yAxisComboBox.Text.Length <= 0) if (header.IndexOf("cam", StringComparison.OrdinalIgnoreCase) >= 0) if (yAxisComboBox.Text.Length <= 0) yAxisComboBox.Text = header;
+                if (zAxisComboBox.Text.Length <= 0) if (header.IndexOf("trim", StringComparison.OrdinalIgnoreCase) >= 0) if (zAxisComboBox.Text.Length <= 0) zAxisComboBox.Text = header;
+                if (UComboBox.Text.Length <= 0) if (header.IndexOf("absolute pressure", StringComparison.OrdinalIgnoreCase) >= 0) if (UComboBox.Text.Length <= 0) UComboBox.Text = header;
             }
 
             if(!String.IsNullOrEmpty(xAxisComboBox.Text) && !String.IsNullOrEmpty(yAxisComboBox.Text) && !String.IsNullOrEmpty(zAxisComboBox.Text))
             {
                 PopulateMainGridView(xAxisComboBox.Text, yAxisComboBox.Text, zAxisComboBox.Text, UComboBox.Text);
-            } else
-            {
-                //Clear the gridview then
-                SecondaryGridView.Rows.Clear();
-                SecondaryGridView.Columns.Clear();
-                MainGridView.Rows.Clear();
             }
-            
+
         }
 
         public void PopulateFilteredCellGridView(DataGridViewTuningCell data)
@@ -75,7 +80,8 @@ namespace DataAnalyser
             double range = data.data.Max() - val;
             int numberOfCells = Math.Min(10, data.data.Length);
 
-            for (int x = 0; x < numberOfCells; x++) {
+            for (int x = 0; x < numberOfCells; x++)
+            {
                 columns.Add(String.Format("{0:0.00}", val));
                 val += range / (double)numberOfCells;
             }
@@ -98,23 +104,30 @@ namespace DataAnalyser
             }
 
             double minY = data.secondaryData.Min();
+            minY = double.MaxValue;
+            for (int index = 0; index < data.secondaryData.Length; index++) if (data.secondaryData[index] < minY) minY = data.secondaryData[index];
+
             double maxY = data.secondaryData.Max();
 
             double Range = maxY - minY;
             List<String> rows = new List<string>();
             val = minY;
             numberOfCells = Math.Min(10, data.secondaryData.Length);
+
+            List<Double> rowDoubles = new List<Double>();
+
             for (int y = 0; y < numberOfCells; y++)
             {
                 rows.Add(String.Format("{0:0.00}", val));
+                rowDoubles.Add(val);
                 val += Range / (double)numberOfCells;
             }
 
             secondaryYValues = new double[rows.Count];
             i = 0;
-            foreach (string row in rows)
+            foreach (double row in rowDoubles)
             {
-                secondaryYValues[i] = Convert.ToDouble(row);
+                secondaryYValues[i] = row;
                 i++;
             }
             SecondaryGridView.RowHeadersWidth = 60;
@@ -138,14 +151,15 @@ namespace DataAnalyser
 
             for (i = 0; i < secondaryXValues.Length; i++)
             {
-                for(int j = 0; j < secondaryYValues.Length; j++)
+                for (int j = 0; j < secondaryYValues.Length; j++)
                 {
-                    if (SecondaryGridViewData[j, i] != 0){
+                    if (SecondaryGridViewData[j, i] != 0)
+                    {
                         if (SecondaryGridViewData[j, i] < min) min = SecondaryGridViewData[j, i];
                         if (SecondaryGridViewData[j, i] > max) max = SecondaryGridViewData[j, i];
                     }
                 }
-                
+
             }
 
 
@@ -172,8 +186,9 @@ namespace DataAnalyser
                         double S = 0.9;
                         double B = 0.92;
 
-                        cell.Style.BackColor = HSVtoRGB(H, S, B); ;
-                    } else
+                        cell.Style.BackColor = HelperMethods.HSVtoRGB(H, S, B); ;
+                    }
+                    else
                     {
                         cell.Value = "";
                     }
@@ -199,50 +214,50 @@ namespace DataAnalyser
             if (MainGridViewyValues.Length <= 0) return true;
             return false;
         }
-
         public void PopulateMainGridView(string xHeader, string yHeader, string zHeader, string vHeader, bool exactMatch = false)
         {
             SecondaryGridView.Rows.Clear();
             SecondaryGridView.Columns.Clear();
             MainGridView.Rows.Clear();
 
-            if(MainXValuesAreNullOrEmpty()) UpdateMainXAxis(ScaleForm.GenerateAxis(250.0, 6000.0, 250.0));
-            if (MainYValuesAreNullOrEmpty()) UpdateMainYAxis(ScaleForm.GenerateAxis(-10.0, 45.0, 5.0));
+            if (MainXValuesAreNullOrEmpty()) UpdateMainXAxis(ScaleForm.GenerateAxis(250.0, 6000.0, 250.0));
+            if (MainYValuesAreNullOrEmpty()) UpdateMainYAxis(ScaleForm.GenerateAxis(-10.0, 45.0, 10.0));
 
             int i = 0;
 
             int xIndex = -1;
             int yIndex = -1;
             int zIndex = -1;
-            int vIndex = -1;
-            int numberOfHeaders = csvData.GetLength(1);
+            int uIndex = -1;
+            int numberOfHeaders = csvData[0].Length;
             for (i = 0; i < numberOfHeaders; i++)
             {
 
-                if (exactMatch) {
+                if (exactMatch)
+                {
                     if (csvHeaders[i].Equals(xHeader)) xIndex = i;
                     if (csvHeaders[i].Equals(yHeader)) yIndex = i;
                     if (csvHeaders[i].Equals(zHeader)) zIndex = i;
-                    if (csvHeaders[i].Equals(vHeader)) vIndex = i;
+                    if (csvHeaders[i].Equals(vHeader)) uIndex = i;
                 }
                 else
                 {
                     if (csvHeaders[i].Contains(xHeader)) xIndex = i;
                     if (csvHeaders[i].Contains(yHeader)) yIndex = i;
                     if (csvHeaders[i].Contains(zHeader)) zIndex = i;
-                    if (csvHeaders[i].Contains(vHeader)) vIndex = i;
+                    if (csvHeaders[i].Contains(vHeader)) uIndex = i;
                 }
-                if (yIndex != -1 && xIndex != -1 && zIndex != -1 && vIndex != -1) break;
+                if (yIndex != -1 && xIndex != -1 && zIndex != -1 && uIndex != -1) break;
             }
 
             //We couldn't find the indexs
-            if (yIndex == -1 || xIndex == -1 || zIndex == -1 || vIndex == -1)
+            if (yIndex == -1 || xIndex == -1 || zIndex == -1 || uIndex == -1)
             {
                 MessageBox.Show("Error: Couldn't find X/Y/Z index in file", "Error");
                 return;
             }
 
-            int height = csvData.GetLength(1);
+            int height = csvData[0].Length;
             MainGridViewData = new List<double[]>[MainGridViewxValues.Length, MainGridViewyValues.Length];
             for (i = 0; i < MainGridView.Columns.Count; i++) for (int j = 0; j < MainGridViewyValues.Length; j++) MainGridViewData[i, j] = new List<double[]>();
 
@@ -250,56 +265,38 @@ namespace DataAnalyser
             double yMult = 1.0;
             double xMult = 1.0;
             double zMult = 1.0;
-            try {
-                uMult = Convert.ToDouble(UAxisMultiplierTextBox.Text);
-            } catch (Exception)
-            {
-                uMult = 1.0;
-            }
 
-            try
-            {
-                yMult = Convert.ToDouble(YAxisMultiplierTextBox.Text);
-            }
-            catch (Exception)
-            {
-                yMult = 1.0;
-            }
+            if (!double.TryParse(UAxisMultiplierTextBox.Text, out uMult)) uMult = 1.0;
+            if (!double.TryParse(YAxisMultiplierTextBox.Text, out yMult)) yMult = 1.0;
+            if (!double.TryParse(XAxisMultiplierTextBox.Text, out xMult)) xMult = 1.0;
+            if (!double.TryParse(ZAxisMultiplierTextBox.Text, out zMult)) zMult = 1.0;
 
-            try
-            {
-                xMult = Convert.ToDouble(XAxisMultiplierTextBox.Text);
-            }
-            catch (Exception)
-            {
-                xMult = 1.0;
-            }
+            double[][] csvDataCopy = csvData.Select(a => a.ToArray()).ToArray();
 
-            try
+            double xsdignore, ysdignore, zsdignore, usdignore;
+
+            if (sdFiltercheckBox.Checked == true)
             {
-                zMult = Convert.ToDouble(ZAxisMultiplierTextBox.Text);
-            }
-            catch (Exception)
-            {
-                zMult = 1.0;
+                if (double.TryParse(xsd.Text, out xsdignore)) RemoveOutliers(ref csvDataCopy, xIndex, xsdignore);
+                if (double.TryParse(ysd.Text, out ysdignore)) RemoveOutliers(ref csvDataCopy, xIndex, ysdignore);
+                if (double.TryParse(zsd.Text, out zsdignore)) RemoveOutliers(ref csvDataCopy, zIndex, zsdignore);
+                if (double.TryParse(usd.Text, out usdignore)) RemoveOutliers(ref csvDataCopy, uIndex, usdignore);
             }
 
             //Iterate each time sample and add it to the appropriate x,y list
-            int numberOfSamples = csvData.GetLength(0);
+            int numberOfSamples = csvDataCopy.Length;
             double minZ = double.MaxValue;
-            double maxZ = double.MinValue;
             double range = 0.0;
             for (i = 0; i < numberOfSamples; i++)
             {
-                double x = csvData[i, xIndex] * xMult;
-                double y = csvData[i, yIndex] * yMult;
-                double z = csvData[i, zIndex] * zMult;
-                double u = csvData[i, vIndex] * uMult;
+                double x = csvDataCopy[i][ xIndex] * xMult;
+                double y = csvDataCopy[i][ yIndex] * yMult;
+                double z = csvDataCopy[i][ zIndex] * zMult;
+                double u = csvDataCopy[i][ uIndex] * uMult;
 
                 //Skip the entry if it is invalid
-                if (!IsValidDouble(x) || !IsValidDouble(y) || !IsValidDouble(z)) continue;
+                if (!HelperMethods.IsValidDouble(x) || !HelperMethods.IsValidDouble(y) || !HelperMethods.IsValidDouble(z)) continue;
 
-                if (z < minZ) minZ = z;
                 int[] coordinates = GetNearestCoordinate(x, y, MainGridViewxValues, MainGridViewyValues);
                 double[] cell = new double[2];
                 cell[0] = z;
@@ -307,24 +304,15 @@ namespace DataAnalyser
                 MainGridViewData[coordinates[0], coordinates[1]].Add(cell);
             }
 
-            //Calculate our max Z value
-            for (i = 0; i < MainGridViewyValues.Length; i++)
-            {
-                for (int j = 0; j < MainGridViewxValues.Length; j++)
-                {
-                    List<double[]> list = MainGridViewData[j, i];
-                    double[] doubleArray = new double[list.Count];
-                    for (int k = 0; k < doubleArray.Length; k++) doubleArray[k] = list[k][0];
-                    if (doubleArray.Length != 0)
-                    {
-                        double average = doubleArray.Average();
-                        if (average > maxZ) maxZ = average;
-                        if (average < minZ) minZ = average;
-                    }
-                }
-            }
+            //Do not display cells with a count below this level
+            double ignoreLowerLimitValue;
+            if (!double.TryParse(ignoreLowerLimit.Text, out ignoreLowerLimitValue)) ignoreLowerLimitValue = Double.MinValue;
 
-            range = maxZ - minZ;
+            double ignoreUpperLimitValue;
+            if (!double.TryParse(ignoreUpperLimit.Text, out ignoreUpperLimitValue)) ignoreUpperLimitValue = Double.MaxValue;
+
+            double ignoreCellCount;
+            if (!double.TryParse(cellCountIgnoreTextBox.Text, out ignoreCellCount)) ignoreCellCount = 0.0;
 
             for (i = 0; i < MainGridViewyValues.Length; i++)
             {
@@ -342,121 +330,88 @@ namespace DataAnalyser
                         secondaryArray[k] = MainGridViewData[j, i][k][1];
                     }
 
-                    DataGridViewTuningCell cell = new DataGridViewTuningCell(secondaryArray, primaryArray, range, minZ);
+                    if (primaryArray.Length < ignoreCellCount) primaryArray = new double[0];
+
+                    DataGridViewTuningCell cell = new DataGridViewTuningCell(secondaryArray, primaryArray, range, minZ, MainGridView.currentMode, ignoreLowerLimitValue, ignoreUpperLimitValue);
 
                     row.Cells.Add(cell);
+
                 }
 
-                
+
                 MainGridView.Rows.Add(row);
             }
             MainGridView.RowHeadersWidth = 60;
+
+            MainGridView.SetFormat(MainGridView.currentMode, true);
         }
 
-        public static bool IsValidDouble(double value)
+
+
+        public static List<double[]> ConditionData(List<double[]> unconditionedData)
         {
-            if (value == double.NaN || double.IsInfinity(value)) return false;
-            return true;
+            List<double[]> conditionedData = new List<double[]>();
+            foreach (double[] value in unconditionedData)
+            {
+                if (HelperMethods.IsValidDouble(value[0]) && HelperMethods.IsValidDouble(value[1])) conditionedData.Add(value);
+            }
+
+            return 
+                conditionedData;
         }
 
-        public class DataGridViewTuningColumn : DataGridViewTextBoxColumn
+        //Remove all outliers that are > 1 + Percentile or < 1 - percentile from the average
+        public static int RemoveOutliers(ref double[][] data, int index, double standardDeviationMultiple)
         {
-            public DataGridViewTuningColumn()
+            int removedEntries = 0;
+            //Split into two seperate arrays
+            List<double> array = new List<double>();
+
+            int length = data.GetLength(0);
+
+            //We don't have enough samples to accurate check for outliers
+            if (length < 30) return 0;
+
+            //Copy the data we are working on to an array so we can calculate SD and our removal limits
+            double average = 0.0;
+            int count = 0;
+            for (int i = 0; i < length; i++)
             {
-                this.CellTemplate = new DataGridViewTuningCell();
-            }
-        }
-
-        public static double[] ConditionData(double[] unconditionedData)
-        {
-            List<double> conditionedData = new List<double>();
-            foreach(double value in unconditionedData) if (IsValidDouble(value)) conditionedData.Add(value);
-
-            return conditionedData.ToArray();
-        }
-
-        public class DataGridViewTuningCell : DataGridViewTextBoxCell
-        {
-            public double average;
-            public double standardDeviation;
-            public double colourRange;
-            public double colourOffset;
-
-            public double min;
-            public double max;
-            public int count;
-            public readonly DataGridViewTuningCellFormat cellFormat = DataGridViewTuningCellFormat.Uninitialized;
-            public double[] data = new double[0];
-            public double[] secondaryData = new double[0];
-            public double range;
-            public double offset;
-
-            public DataGridViewTuningCell()
-            {
-            }
-
-            public DataGridViewTuningCell(double [] secondaryDataInput, double [] doubleArray, double range, double offset, DataGridViewTuningCellFormat format = DataGridViewTuningCellFormat.Average)
-            {
-                this.data = ConditionData(doubleArray);
-                this.secondaryData = ConditionData(secondaryDataInput);
-                this.range = range;
-                this.offset = offset;
-                this.count = doubleArray.Length;
-                SetFormat(format, range, offset);
-
-            }
-
-            public enum DataGridViewTuningCellFormat
-            {
-                Uninitialized = -1,
-                Average = 0,
-                StandardDeviation = 1,
-                Minimum = 2,
-                Maximum = 3,
-                Count = 4,
-            }
-
-            public void SetFormat(DataGridViewTuningCellFormat newFormat, double _colourRange, double _colourOffset)
-            {
-                this.colourRange = _colourRange;
-                this.colourOffset = _colourOffset;
-
-                if (newFormat == cellFormat) return;
-
-                this.Value = "";
-                if (data.Length == 0) return;
-
-                average = data.Average();
-                min = data.Min();
-                max = data.Max();
-
-                double sumOfSquaresOfDifferences = data.Select(val => (val - average) * (val - average)).Sum();
-                this.standardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / data.Length);
-
-                double dataVal = 0.0;
-
-                if (newFormat == DataGridViewTuningCellFormat.Average) dataVal = average;
-                else if (newFormat == DataGridViewTuningCellFormat.Minimum) dataVal = min;
-                else if (newFormat == DataGridViewTuningCellFormat.Maximum) dataVal = max;
-                else if (newFormat == DataGridViewTuningCellFormat.StandardDeviation) dataVal = standardDeviation;
-                else if (newFormat == DataGridViewTuningCellFormat.Count) dataVal = count;
-
-                if (IsValidDouble(dataVal))
-                {
-                    this.Value = String.Format("{0:0.00}", dataVal);
-
-                    double scalar = 360.0 / colourRange;
-                    double value = scalar * (dataVal - colourOffset);
-
-                    double H = (0.4 * (360.0 - value)) - 10.0;
-                    double S = 0.9;
-                    double B = 0.92;
-
-                    this.Style.BackColor = HSVtoRGB(H, S, B); ;
-
+                double value = data[i][index];
+                if(HelperMethods.IsValidDouble(value))
+                { 
+                    average += value;
+                    count++;
+                    array.Add(value);
                 }
-
             }
+            average /= count;
+
+            array.Sort();
+            double median = array[array.Count / 2];
+
+            double sumOfSquaresOfDifferences = array.Select(val => (val - average) * (val - average)).Sum();
+            double standardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / array.Count);
+
+            //If we have no variability then nothing to remove
+            if (standardDeviation == 0.0) return 0;
+
+            //Remove any value > or < standardDeviationMultiple*standardDeviation1 from the median
+            double upperLimit = (standardDeviationMultiple * standardDeviation) + median;
+            double lowerLimit = median - (standardDeviationMultiple * standardDeviation);
+
+            for (int i = 0; i < length; i++)
+            {
+                double value = data[i][index];
+                //If the value is within range do nothing, if not zero this value so we ignore it
+                if (value >= upperLimit || value <= lowerLimit)
+                {
+                    data[i][index] = double.NaN;
+                    removedEntries++;
+                }
+            }
+
+            return removedEntries;
         }
 
         public int[] GetNearestCoordinate(double x, double y, double[] xVals, double[] yVals)
@@ -487,165 +442,6 @@ namespace DataAnalyser
             results[0] = xSmallestErrorIndex;
             results[1] = ySmallestErrorIndex;
             return results;
-        }
-
-        // Load a CSV file into an array of rows and columns.
-        // Assume there may be blank lines but every line has
-        // the same number of fields.
-        private bool LoadCsv(string filename)
-        {
-            // Get the file's text.
-            try {
-                string whole_file = System.IO.File.ReadAllText(filename);
-
-                // Split into lines.
-                whole_file = whole_file.Replace('\n', '\r');
-                string[] lines = whole_file.Split(new char[] { '\r' },
-                    StringSplitOptions.RemoveEmptyEntries);
-
-                //Check if empty
-                if(lines.Length < 2)
-                {
-                    MessageBox.Show("CSV file requires at least one entry", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
-                }
-
-                if (string.IsNullOrEmpty(lines[0])){
-                    MessageBox.Show("CSV file missing header", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-
-                int headerRow = 0;
-                int firstDataRow = 1;
-                if(lines[0].Contains("HP Tuners CSV Log File"))
-                {
-                    //We have a HPL file
-                    for (int i = 0; i < lines.Length; i++) {
-                        if (lines[i].Equals("[Channel Data]"))
-                        {
-                            firstDataRow = i + 1;
-                        }
-                        if (lines[i].Equals("[Channel Information]"))
-                        {
-                            headerRow = i + 2;
-                        }
-                        if (firstDataRow != 1 && headerRow != 0) break;
-
-                        if (i == lines.Length - 2)
-                        {
-                            MessageBox.Show("Could not find [Channel Data] Or [Channel Information] within HPT CSV log file, giving up.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return false;
-                        }
-                    }
-
-                } 
-
-                // See how many rows and columns there are.
-                int num_rows = lines.Length - firstDataRow -1;
-                int num_cols = lines[headerRow].Split(',').Length;
-
-                // Allocate the data array.
-                csvHeaders = new string[num_cols];
-                csvData = new double[num_rows - 1, num_cols];
-
-                // Load the array.
-
-                string[] headerLine = lines[headerRow].Split(',');
-                if(headerLine.Length < 3)
-                {
-                    MessageBox.Show("Not enough headers in CSV file! Need at least three, possibly wrong file format? I'm giving up, sorry bro.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
-                }
-
-                csvHeaders = headerLine;
-
-                for (int r = firstDataRow; r < (num_rows); r++)
-                {
-                    string[] line_r = lines[r].Split(',');
-                    for (int c = 0; c < num_cols; c++)
-                    {
-                        double result;
-                        if (String.IsNullOrEmpty(line_r[c])) continue;
-                        if (Double.TryParse(line_r[c], out result))
-                        {
-                            csvData[r - 1, c] = result;
-                        }
-                        else
-                        {
-                            csvData[r - 1, c] = double.NaN;
-                        }
-                    }
-                }
-
-
-                xAxisComboBox.Items.Clear();
-                yAxisComboBox.Items.Clear();
-                UComboBox.Items.Clear();
-                xAxisComboBox.Text = "";
-                yAxisComboBox.Text = "";
-                zAxisComboBox.Text = "";
-                UComboBox.Text = "";
-
-                foreach (string header in csvHeaders)
-                {
-                    xAxisComboBox.Items.Add(header);
-                    yAxisComboBox.Items.Add(header);
-                    zAxisComboBox.Items.Add(header);
-                    UComboBox.Items.Add(header);
-                }
-
-                return true;
-
-
-            }
-            catch (Exception e)
-            {
-                var currentStack = new System.Diagnostics.StackTrace(true);
-                string stackTrace= currentStack.ToString();
-
-                FlexibleMessageBox.Show("Failed to open file. Stacktrace: " + Environment.NewLine + stackTrace,
-                                     "Error",
-                                     MessageBoxButtons.OK,
-                                     MessageBoxIcon.Information,
-                                     MessageBoxDefaultButton.Button2);
-                return false;
-            }
-        }
-
-
-
-        private bool WriteCSV(string filename)
-        {
-            // Get the file's text.
-            try
-            {
-                using(StreamWriter writer = new StreamWriter(filename))
-                {
-                    string header = "";
-                    for (int column = 0; column < csvHeaders.Length; column++)
-                    {
-                        header += csvHeaders[column].ToString();
-                        if(column != csvHeaders.Length-1) header += ",";
-                    }
-                    writer.WriteLine(header);
-
-                    for (int row = 0; row < csvData.GetLength(0); row++)
-                    {
-                        string rowString = "";
-                        for(int column = 0; column < csvData.GetLength(1); column++)
-                        {
-                            if(IsValidDouble(csvData[row, column])) rowString += csvData[row, column].ToString();
-                            if (column != csvHeaders.Length - 1) rowString += ",";
-                        }
-                        writer.WriteLine(rowString);
-                    }
-                }
-                return true;
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Error: " + e.Message, "Error");
-                return false;
-            }
         }
 
         public void UpdateMainXAxisAndRegenerate(Double[] axis)
@@ -786,146 +582,40 @@ namespace DataAnalyser
 
         private void minButton_Click(object sender, EventArgs e)
         {
-            double min = double.MaxValue;
-            double max = double.MinValue;
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    if (cell.data.Length > 0)
-                    {
-                        if (cell.min < min) min = cell.min;
-                        if (cell.min > max) max = cell.min;
-                    }
-                }
-            }
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Minimum, max - min, min);
-                }
-            }
+            MainGridView.SetFormat(CellFormat.Minimum);
         }
 
         private void maxButton_Click(object sender, EventArgs e)
         {
-            double min = double.MaxValue;
-            double max = double.MinValue;
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    if (cell.data.Length > 0)
-                    {
-                        if (cell.max < min) min = cell.max;
-                        if (cell.max > max) max = cell.max;
-                    }
-                }
-            }
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Maximum, max - min, min);
-                }
-            }
+           MainGridView.SetFormat(CellFormat.Maximum);
         }
 
         private void countButton_Click(object sender, EventArgs e)
         {
-            double min = double.MaxValue;
-            double max = double.MinValue;
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    if (cell.data.Length > 0)
-                    {
-                        if (cell.count < min) min = (double)cell.count;
-                        if (cell.count > max) max = (double)cell.count;
-                    }
-                }
-            }
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Count, max - min, min);
-                }
-            }
+            MainGridView.SetFormat(CellFormat.Count);
         }
 
         private void SDButton_Click(object sender, EventArgs e)
         {
-            //Update the range for the colour calculation
-            double min = double.MaxValue;
-            double max = double.MinValue;
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    if(cell.data.Length > 0){
-                        if (cell.standardDeviation < min) min = cell.standardDeviation;
-                        if (cell.standardDeviation > max) max = cell.standardDeviation;
-                    }
-                }
-            }
-
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.StandardDeviation, max - min, min);
-                }
-            }
+            MainGridView.SetFormat(CellFormat.StandardDeviation);
         }
 
         private void averageButton_Click(object sender, EventArgs e)
         {
-            double min = double.MaxValue;
-            double max = double.MinValue;
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    if (cell.data.Length > 0)
-                    {
-                        if (cell.average < min) min = cell.average;
-                        if (cell.average > max) max = cell.average;
-                    }
-
-
-                }
-            }
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    cell.SetFormat(DataGridViewTuningCell.DataGridViewTuningCellFormat.Average, max - min, min);
-                }
-            }
+            MainGridView.SetFormat(CellFormat.Average);
         }
 
         private void checkPulseButton_Click(object sender, EventArgs e)
         {
-            int yIndex = 0;
-            int xIndex = 0;
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    if (cell.Selected)
-                    {
-                        yIndex = cell.RowIndex;
-                        xIndex = cell.ColumnIndex;
-                        break;
-                    }
-                }
-            }
+
+            if (MainGridView.SelectedCells.Count <= 0) return;
+            int yIndex = MainGridView.SelectedCells[0].RowIndex;
+            int xIndex = MainGridView.SelectedCells[0].ColumnIndex;
+
 
             //Update the gridview with the new selection
             PopulateMainGridView(xAxisComboBox.Text, yAxisComboBox.Text, zAxisComboBox.Text, UComboBox.Text);
+
 
             foreach (DataGridViewRow row in MainGridView.Rows)
             {
@@ -947,125 +637,13 @@ namespace DataAnalyser
             PopulateMainGridView(xAxisComboBox.Text, yAxisComboBox.Text, zAxisComboBox.Text, UComboBox.Text);
         }
 
-        public static Color HSVtoRGB(double h, double s, double v)
-        {
-            double r, g, b, f, p, q, t;
-            int i = 0;
-            if (s == 0)
-            {
-                return Color.FromArgb((byte)(v * 255.0), (byte)(v * 255.0), (byte)(v * 255.0));
-            }
-            h /= 60;            // sector 0 to 5
-            i = (int)Math.Floor(h);
-            f = h - i;          // factorial part of h
-            p = v * (1.0 - s);
-            q = v * (1.0 - s * f);
-            t = v * (1.0 - s * (1.0 - f));
-            switch ((int)i)
-            {
-                case 0:
-                    r = v;
-                    g = t;
-                    b = p;
-                    break;
-                case 1:
-                    r = q;
-                    g = v;
-                    b = p;
-                    break;
-                case 2:
-                    r = p;
-                    g = v;
-                    b = t;
-                    break;
-                case 3:
-                    r = p;
-                    g = q;
-                    b = v;
-                    break;
-                case 4:
-                    r = t;
-                    g = p;
-                    b = v;
-                    break;
-                default:        // case 5:
-                    r = v;
-                    g = p;
-                    b = q;
-                    break;
-            }
-            return Color.FromArgb((byte)(r * 255.0), (byte)(g * 255.0), (byte)(b * 255.0));
-        }
-
-        private void calculateAirmassButton_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Not implemented in this version, sorry bro.");
-        }
-
-        static public double GetRSquared(double[,] array1, int index1, int index2, double scale1, double scale2)
-        {
-            double R = 0;
-
-            try
-            {
-                // sum(xy)
-                int invalidEntries = 0;
-                double sumXY = 0;
-                for (int c = 0; c <= array1.GetLength(0) - 1; c++)
-                {
-                    double number1 = (array1[c, index1] * scale1);
-                    double number2 = (array1[c, index2] * scale2);
-
-                    if(!IsValidDouble(number1) || !IsValidDouble(number2)){
-                        invalidEntries++;
-                        continue;
-                    }
-
-                    sumXY = sumXY + (array1[c, index1] * scale1) * (array1[c, index2] * scale2);
-                }
-
-                // sum(x)
-                double sumX = 0;
-                for (int c = 0; c <= array1.GetLength(0) - 1; c++)
-                {
-                    sumX = sumX + (array1[c, index1] * scale1);
-                }
-
-                // sum(y)
-                double sumY = 0;
-                for (int c = 0; c <= array1.GetLength(0) - 1; c++)
-                {
-                    sumY = sumY + (array1[c, index2] * scale2);
-                }
-
-                // sum(x^2)
-                double sumXX = 0;
-                for (int c = 0; c <= array1.GetLength(0) - 1; c++)
-                {
-                    sumXX = sumXX + (array1[c, index1] * scale1) * (array1[c, index1] * scale1);
-                }
-
-                // sum(y^2)
-                double sumYY = 0;
-                for (int c = 0; c <= array1.GetLength(0) - 1; c++)
-                {
-                    sumYY = sumYY + (array1[c, index2] * scale2) * (array1[c, index2] * scale2);
-                }
-
-                // n
-                int n = array1.GetLength(0) - invalidEntries;
-
-                R = (n * sumXY - sumX * sumY) / (Math.Pow((n * sumXX - Math.Pow(sumX, 2)), 0.5) * Math.Pow((n * sumYY - Math.Pow(sumY, 2)), 0.5));
-            }
-            catch (Exception ex)
-            {
-                throw (ex);
-            }
-
-            return R * R;
-        }
 
         private void UComboBox_DragLeave(object sender, EventArgs e)
+        {
+
+        }
+
+        private void UAxisMultiplierTextBox_TextChanged(object sender, EventArgs e)
         {
 
         }

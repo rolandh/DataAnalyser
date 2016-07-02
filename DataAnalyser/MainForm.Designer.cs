@@ -30,6 +30,26 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.PlotTab = new System.Windows.Forms.TabPage();
+            this.label17 = new System.Windows.Forms.Label();
+            this.ignoreLowerLimit = new System.Windows.Forms.TextBox();
+            this.sdFiltercheckBox = new System.Windows.Forms.CheckBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.cellCountIgnoreTextBox = new System.Windows.Forms.TextBox();
+            this.MainGridView = new DataAnalyser.DataTuningGrid();
+            this.label15 = new System.Windows.Forms.Label();
+            this.ignoreUpperLimit = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.usd = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.xsd = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.ysd = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.zsd = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.XAxisMultiplierTextBox = new System.Windows.Forms.TextBox();
@@ -56,20 +76,14 @@
             this.maxButton = new System.Windows.Forms.Button();
             this.minButton = new System.Windows.Forms.Button();
             this.SecondaryGridView = new System.Windows.Forms.DataGridView();
-            this.MainGridView = new System.Windows.Forms.DataGridView();
             this.CalculateTab = new System.Windows.Forms.TabPage();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.calculatedFuelMassErrorTextBox = new System.Windows.Forms.TextBox();
-            this.calculatedInjectorPulseErrorTextBox = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.calculateAirmassButton = new System.Windows.Forms.Button();
+            this.pcmSimulator1 = new DataAnalyser.PCMSimulator();
             this.hptTab = new System.Windows.Forms.TabPage();
             this.LoadButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.PlotTab.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SecondaryGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SecondaryGridView)).BeginInit();
             this.CalculateTab.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -84,11 +98,31 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 40);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1553, 619);
+            this.tabControl1.Size = new System.Drawing.Size(1553, 654);
             this.tabControl1.TabIndex = 0;
             // 
             // PlotTab
             // 
+            this.PlotTab.Controls.Add(this.label17);
+            this.PlotTab.Controls.Add(this.ignoreLowerLimit);
+            this.PlotTab.Controls.Add(this.sdFiltercheckBox);
+            this.PlotTab.Controls.Add(this.label16);
+            this.PlotTab.Controls.Add(this.cellCountIgnoreTextBox);
+            this.PlotTab.Controls.Add(this.MainGridView);
+            this.PlotTab.Controls.Add(this.label15);
+            this.PlotTab.Controls.Add(this.ignoreUpperLimit);
+            this.PlotTab.Controls.Add(this.label13);
+            this.PlotTab.Controls.Add(this.label14);
+            this.PlotTab.Controls.Add(this.usd);
+            this.PlotTab.Controls.Add(this.label11);
+            this.PlotTab.Controls.Add(this.label12);
+            this.PlotTab.Controls.Add(this.xsd);
+            this.PlotTab.Controls.Add(this.label9);
+            this.PlotTab.Controls.Add(this.label10);
+            this.PlotTab.Controls.Add(this.ysd);
+            this.PlotTab.Controls.Add(this.label8);
+            this.PlotTab.Controls.Add(this.label3);
+            this.PlotTab.Controls.Add(this.zsd);
             this.PlotTab.Controls.Add(this.label7);
             this.PlotTab.Controls.Add(this.label6);
             this.PlotTab.Controls.Add(this.XAxisMultiplierTextBox);
@@ -115,19 +149,190 @@
             this.PlotTab.Controls.Add(this.maxButton);
             this.PlotTab.Controls.Add(this.minButton);
             this.PlotTab.Controls.Add(this.SecondaryGridView);
-            this.PlotTab.Controls.Add(this.MainGridView);
             this.PlotTab.Location = new System.Drawing.Point(4, 22);
             this.PlotTab.Name = "PlotTab";
             this.PlotTab.Padding = new System.Windows.Forms.Padding(3);
-            this.PlotTab.Size = new System.Drawing.Size(1545, 593);
+            this.PlotTab.Size = new System.Drawing.Size(1545, 628);
             this.PlotTab.TabIndex = 0;
             this.PlotTab.Text = "3D Plot View";
             this.PlotTab.UseVisualStyleBackColor = true;
             // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(554, 191);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(77, 13);
+            this.label17.TabIndex = 52;
+            this.label17.Text = "Ignore Cells  < ";
+            // 
+            // ignoreLowerLimit
+            // 
+            this.ignoreLowerLimit.Location = new System.Drawing.Point(637, 187);
+            this.ignoreLowerLimit.Name = "ignoreLowerLimit";
+            this.ignoreLowerLimit.Size = new System.Drawing.Size(38, 20);
+            this.ignoreLowerLimit.TabIndex = 51;
+            // 
+            // sdFiltercheckBox
+            // 
+            this.sdFiltercheckBox.AutoSize = true;
+            this.sdFiltercheckBox.Location = new System.Drawing.Point(372, 165);
+            this.sdFiltercheckBox.Name = "sdFiltercheckBox";
+            this.sdFiltercheckBox.Size = new System.Drawing.Size(177, 17);
+            this.sdFiltercheckBox.TabIndex = 50;
+            this.sdFiltercheckBox.Text = "Filter data on standard deviation";
+            this.sdFiltercheckBox.UseVisualStyleBackColor = true;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(375, 193);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(130, 13);
+            this.label16.TabIndex = 48;
+            this.label16.Text = "Ignore Cells With Count < ";
+            // 
+            // cellCountIgnoreTextBox
+            // 
+            this.cellCountIgnoreTextBox.Location = new System.Drawing.Point(511, 188);
+            this.cellCountIgnoreTextBox.Name = "cellCountIgnoreTextBox";
+            this.cellCountIgnoreTextBox.Size = new System.Drawing.Size(38, 20);
+            this.cellCountIgnoreTextBox.TabIndex = 47;
+            // 
+            // MainGridView
+            // 
+            this.MainGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.MainGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.MainGridView.Location = new System.Drawing.Point(9, 217);
+            this.MainGridView.Name = "MainGridView";
+            this.MainGridView.Size = new System.Drawing.Size(870, 405);
+            this.MainGridView.TabIndex = 45;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(677, 192);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(74, 13);
+            this.label15.TabIndex = 44;
+            this.label15.Text = "Ignore Cells  >";
+            // 
+            // ignoreUpperLimit
+            // 
+            this.ignoreUpperLimit.Location = new System.Drawing.Point(760, 188);
+            this.ignoreUpperLimit.Name = "ignoreUpperLimit";
+            this.ignoreUpperLimit.Size = new System.Drawing.Size(38, 20);
+            this.ignoreUpperLimit.TabIndex = 43;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(1032, 110);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(103, 13);
+            this.label13.TabIndex = 42;
+            this.label13.Text = "Standard Deviations";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(880, 110);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(102, 13);
+            this.label14.TabIndex = 41;
+            this.label14.Text = "Ignore Data Beyond";
+            // 
+            // usd
+            // 
+            this.usd.Location = new System.Drawing.Point(988, 106);
+            this.usd.Name = "usd";
+            this.usd.Size = new System.Drawing.Size(38, 20);
+            this.usd.TabIndex = 40;
+            this.usd.Text = "3.14";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(158, 112);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(103, 13);
+            this.label11.TabIndex = 39;
+            this.label11.Text = "Standard Deviations";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 112);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(102, 13);
+            this.label12.TabIndex = 38;
+            this.label12.Text = "Ignore Data Beyond";
+            // 
+            // xsd
+            // 
+            this.xsd.Location = new System.Drawing.Point(114, 108);
+            this.xsd.Name = "xsd";
+            this.xsd.Size = new System.Drawing.Size(38, 20);
+            this.xsd.TabIndex = 37;
+            this.xsd.Text = "3.14";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(422, 112);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(103, 13);
+            this.label9.TabIndex = 36;
+            this.label9.Text = "Standard Deviations";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(270, 112);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(102, 13);
+            this.label10.TabIndex = 35;
+            this.label10.Text = "Ignore Data Beyond";
+            // 
+            // ysd
+            // 
+            this.ysd.Location = new System.Drawing.Point(378, 108);
+            this.ysd.Name = "ysd";
+            this.ysd.Size = new System.Drawing.Size(38, 20);
+            this.ysd.TabIndex = 34;
+            this.ysd.Text = "3.14";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(715, 111);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(103, 13);
+            this.label8.TabIndex = 33;
+            this.label8.Text = "Standard Deviations";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(563, 111);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(102, 13);
+            this.label3.TabIndex = 32;
+            this.label3.Text = "Ignore Data Beyond";
+            // 
+            // zsd
+            // 
+            this.zsd.Location = new System.Drawing.Point(671, 107);
+            this.zsd.Name = "zsd";
+            this.zsd.Size = new System.Drawing.Size(38, 20);
+            this.zsd.TabIndex = 31;
+            this.zsd.Text = "3.14";
+            // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(882, 85);
+            this.label7.Location = new System.Drawing.Point(903, 85);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(81, 13);
             this.label7.TabIndex = 30;
@@ -136,7 +341,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 81);
+            this.label6.Location = new System.Drawing.Point(31, 81);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(80, 13);
             this.label6.TabIndex = 29;
@@ -144,7 +349,7 @@
             // 
             // XAxisMultiplierTextBox
             // 
-            this.XAxisMultiplierTextBox.Location = new System.Drawing.Point(92, 78);
+            this.XAxisMultiplierTextBox.Location = new System.Drawing.Point(114, 78);
             this.XAxisMultiplierTextBox.Name = "XAxisMultiplierTextBox";
             this.XAxisMultiplierTextBox.Size = new System.Drawing.Size(100, 20);
             this.XAxisMultiplierTextBox.TabIndex = 28;
@@ -178,7 +383,7 @@
             // 
             // UAxisMultiplierTextBox
             // 
-            this.UAxisMultiplierTextBox.Location = new System.Drawing.Point(968, 82);
+            this.UAxisMultiplierTextBox.Location = new System.Drawing.Point(989, 82);
             this.UAxisMultiplierTextBox.Name = "UAxisMultiplierTextBox";
             this.UAxisMultiplierTextBox.Size = new System.Drawing.Size(100, 20);
             this.UAxisMultiplierTextBox.TabIndex = 24;
@@ -194,7 +399,7 @@
             // 
             // ChangeMainYAxisButton
             // 
-            this.ChangeMainYAxisButton.Location = new System.Drawing.Point(108, 109);
+            this.ChangeMainYAxisButton.Location = new System.Drawing.Point(9, 188);
             this.ChangeMainYAxisButton.Name = "ChangeMainYAxisButton";
             this.ChangeMainYAxisButton.Size = new System.Drawing.Size(96, 23);
             this.ChangeMainYAxisButton.TabIndex = 22;
@@ -204,7 +409,7 @@
             // 
             // ChangeMainXAxisButton
             // 
-            this.ChangeMainXAxisButton.Location = new System.Drawing.Point(6, 109);
+            this.ChangeMainXAxisButton.Location = new System.Drawing.Point(114, 188);
             this.ChangeMainXAxisButton.Name = "ChangeMainXAxisButton";
             this.ChangeMainXAxisButton.Size = new System.Drawing.Size(96, 23);
             this.ChangeMainXAxisButton.TabIndex = 20;
@@ -249,7 +454,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(795, 6);
+            this.button1.Location = new System.Drawing.Point(804, 188);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 15;
@@ -295,7 +500,7 @@
             // 
             // checkPulseButton
             // 
-            this.checkPulseButton.Location = new System.Drawing.Point(885, 108);
+            this.checkPulseButton.Location = new System.Drawing.Point(885, 146);
             this.checkPulseButton.Name = "checkPulseButton";
             this.checkPulseButton.Size = new System.Drawing.Size(262, 23);
             this.checkPulseButton.TabIndex = 8;
@@ -358,99 +563,41 @@
             this.SecondaryGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.SecondaryGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.SecondaryGridView.Location = new System.Drawing.Point(885, 138);
+            this.SecondaryGridView.Location = new System.Drawing.Point(885, 217);
             this.SecondaryGridView.Name = "SecondaryGridView";
-            this.SecondaryGridView.Size = new System.Drawing.Size(654, 449);
+            this.SecondaryGridView.Size = new System.Drawing.Size(654, 405);
             this.SecondaryGridView.TabIndex = 2;
             this.SecondaryGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.SecondaryGridView_ColumnHeaderMouseClick);
             this.SecondaryGridView.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.SecondaryGridView_RowHeaderMouseClick);
             // 
-            // MainGridView
-            // 
-            this.MainGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.MainGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.MainGridView.Location = new System.Drawing.Point(5, 138);
-            this.MainGridView.Name = "MainGridView";
-            this.MainGridView.Size = new System.Drawing.Size(865, 449);
-            this.MainGridView.TabIndex = 1;
-            this.MainGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_ColumnHeaderMouseClick);
-            this.MainGridView.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_RowHeaderMouseClick);
-            // 
             // CalculateTab
             // 
-            this.CalculateTab.Controls.Add(this.label9);
-            this.CalculateTab.Controls.Add(this.label8);
-            this.CalculateTab.Controls.Add(this.calculatedFuelMassErrorTextBox);
-            this.CalculateTab.Controls.Add(this.calculatedInjectorPulseErrorTextBox);
-            this.CalculateTab.Controls.Add(this.label3);
-            this.CalculateTab.Controls.Add(this.calculateAirmassButton);
+            this.CalculateTab.Controls.Add(this.pcmSimulator1);
             this.CalculateTab.Location = new System.Drawing.Point(4, 22);
             this.CalculateTab.Name = "CalculateTab";
-            this.CalculateTab.Size = new System.Drawing.Size(1545, 593);
+            this.CalculateTab.Size = new System.Drawing.Size(1545, 628);
             this.CalculateTab.TabIndex = 2;
             this.CalculateTab.Text = "Calculate Variables";
             this.CalculateTab.UseVisualStyleBackColor = true;
             // 
-            // label9
+            // pcmSimulator1
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(16, 125);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(358, 13);
-            this.label9.TabIndex = 32;
-            this.label9.Text = "Error of Calculated Fuel Mass via SD vs Calculated Fuel Mass via Inj Pulse";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(16, 78);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(137, 13);
-            this.label8.TabIndex = 31;
-            this.label8.Text = "Error of Calculated Inj Pulse";
-            // 
-            // calculatedFuelMassErrorTextBox
-            // 
-            this.calculatedFuelMassErrorTextBox.Location = new System.Drawing.Point(19, 148);
-            this.calculatedFuelMassErrorTextBox.Name = "calculatedFuelMassErrorTextBox";
-            this.calculatedFuelMassErrorTextBox.Size = new System.Drawing.Size(100, 20);
-            this.calculatedFuelMassErrorTextBox.TabIndex = 30;
-            // 
-            // calculatedInjectorPulseErrorTextBox
-            // 
-            this.calculatedInjectorPulseErrorTextBox.Location = new System.Drawing.Point(19, 102);
-            this.calculatedInjectorPulseErrorTextBox.Name = "calculatedInjectorPulseErrorTextBox";
-            this.calculatedInjectorPulseErrorTextBox.Size = new System.Drawing.Size(100, 20);
-            this.calculatedInjectorPulseErrorTextBox.TabIndex = 29;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 14);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(173, 13);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Calculate Airmass, Fuelmass, Inj ms";
-            // 
-            // calculateAirmassButton
-            // 
-            this.calculateAirmassButton.Location = new System.Drawing.Point(19, 40);
-            this.calculateAirmassButton.Name = "calculateAirmassButton";
-            this.calculateAirmassButton.Size = new System.Drawing.Size(170, 23);
-            this.calculateAirmassButton.TabIndex = 2;
-            this.calculateAirmassButton.Text = "Calculate and Update CSV";
-            this.calculateAirmassButton.UseVisualStyleBackColor = true;
-            this.calculateAirmassButton.Click += new System.EventHandler(this.calculateAirmassButton_Click);
+            this.pcmSimulator1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pcmSimulator1.Location = new System.Drawing.Point(3, 3);
+            this.pcmSimulator1.Name = "pcmSimulator1";
+            this.pcmSimulator1.Size = new System.Drawing.Size(1537, 578);
+            this.pcmSimulator1.TabIndex = 0;
             // 
             // hptTab
             // 
             this.hptTab.Location = new System.Drawing.Point(4, 22);
             this.hptTab.Name = "hptTab";
             this.hptTab.Padding = new System.Windows.Forms.Padding(3);
-            this.hptTab.Size = new System.Drawing.Size(1545, 593);
+            this.hptTab.Size = new System.Drawing.Size(1545, 628);
             this.hptTab.TabIndex = 1;
-            this.hptTab.Text = "Paste HPT Data Here (Future)";
+            this.hptTab.Text = "ReCalculate SD (future)";
             this.hptTab.UseVisualStyleBackColor = true;
             // 
             // LoadButton
@@ -467,7 +614,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1568, 680);
+            this.ClientSize = new System.Drawing.Size(1568, 715);
             this.Controls.Add(this.LoadButton);
             this.Controls.Add(this.tabControl1);
             this.Name = "MainForm";
@@ -475,10 +622,9 @@
             this.tabControl1.ResumeLayout(false);
             this.PlotTab.ResumeLayout(false);
             this.PlotTab.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SecondaryGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SecondaryGridView)).EndInit();
             this.CalculateTab.ResumeLayout(false);
-            this.CalculateTab.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -499,7 +645,6 @@
         private System.Windows.Forms.Button maxButton;
         private System.Windows.Forms.Button minButton;
         private System.Windows.Forms.DataGridView SecondaryGridView;
-        private System.Windows.Forms.DataGridView MainGridView;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ComboBox zAxisComboBox;
         private System.Windows.Forms.Label label1;
@@ -509,20 +654,35 @@
         private System.Windows.Forms.Button ChangeMainYAxisButton;
         private System.Windows.Forms.TabPage hptTab;
         private System.Windows.Forms.TabPage CalculateTab;
-        private System.Windows.Forms.Button calculateAirmassButton;
         private System.Windows.Forms.TextBox YAxisMultiplierTextBox;
         private System.Windows.Forms.TextBox UAxisMultiplierTextBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox ZAxisMultiplierTextBox;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox XAxisMultiplierTextBox;
+        private PCMSimulator pcmSimulator1;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox usd;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox xsd;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox zsd;
+        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox calculatedFuelMassErrorTextBox;
-        private System.Windows.Forms.TextBox calculatedInjectorPulseErrorTextBox;
+        private System.Windows.Forms.TextBox ysd;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox ignoreUpperLimit;
+        private DataTuningGrid MainGridView;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox cellCountIgnoreTextBox;
+        private System.Windows.Forms.CheckBox sdFiltercheckBox;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox ignoreLowerLimit;
     }
 }
 
