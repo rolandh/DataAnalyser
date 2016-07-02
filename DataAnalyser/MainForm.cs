@@ -44,10 +44,6 @@ namespace DataAnalyser
             xAxisComboBox.Items.Clear();
             yAxisComboBox.Items.Clear();
             UComboBox.Items.Clear();
-            xAxisComboBox.Text = "";
-            yAxisComboBox.Text = "";
-            zAxisComboBox.Text = "";
-            UComboBox.Text = "";
 
             foreach (string header in csvHeaders)
             {
@@ -58,17 +54,13 @@ namespace DataAnalyser
             }
 
 
-            xAxisComboBox.Text = "";
-            yAxisComboBox.Text = "";
-            zAxisComboBox.Text = "";
-
-            //Try and auto pick the axis
+            //Try and auto pick the axis if they don't already have text in them
             foreach (string header in csvHeaders)
             {
-                if (header.IndexOf("rpm", StringComparison.OrdinalIgnoreCase) >= 0) if(xAxisComboBox.Text.Length <= 0) xAxisComboBox.Text = header;
-                if (header.IndexOf("cam", StringComparison.OrdinalIgnoreCase) >= 0) if (yAxisComboBox.Text.Length <= 0) yAxisComboBox.Text = header;
-                if (header.IndexOf("trim", StringComparison.OrdinalIgnoreCase) >= 0) if (zAxisComboBox.Text.Length <= 0) zAxisComboBox.Text = header;
-                if (header.IndexOf("absolute pressure", StringComparison.OrdinalIgnoreCase) >= 0) if (UComboBox.Text.Length <= 0) UComboBox.Text = header;
+                if (xAxisComboBox.Text.Length <= 0) if (header.IndexOf("rpm", StringComparison.OrdinalIgnoreCase) >= 0) if(xAxisComboBox.Text.Length <= 0) xAxisComboBox.Text = header;
+                if (yAxisComboBox.Text.Length <= 0) if (header.IndexOf("cam", StringComparison.OrdinalIgnoreCase) >= 0) if (yAxisComboBox.Text.Length <= 0) yAxisComboBox.Text = header;
+                if (zAxisComboBox.Text.Length <= 0) if (header.IndexOf("trim", StringComparison.OrdinalIgnoreCase) >= 0) if (zAxisComboBox.Text.Length <= 0) zAxisComboBox.Text = header;
+                if (UComboBox.Text.Length <= 0) if (header.IndexOf("absolute pressure", StringComparison.OrdinalIgnoreCase) >= 0) if (UComboBox.Text.Length <= 0) UComboBox.Text = header;
             }
 
             if(!String.IsNullOrEmpty(xAxisComboBox.Text) && !String.IsNullOrEmpty(yAxisComboBox.Text) && !String.IsNullOrEmpty(zAxisComboBox.Text))
@@ -287,16 +279,17 @@ namespace DataAnalyser
 
             double xsdignore, ysdignore, zsdignore, usdignore;
 
-            if(double.TryParse(xsd.Text, out xsdignore)) RemoveOutliers(ref csvDataCopy, xIndex, xsdignore);
-            if(double.TryParse(ysd.Text, out ysdignore)) RemoveOutliers(ref csvDataCopy, xIndex, ysdignore);
-            if(double.TryParse(zsd.Text, out zsdignore)) RemoveOutliers(ref csvDataCopy, zIndex, zsdignore);
-            if(double.TryParse(usd.Text, out usdignore)) RemoveOutliers(ref csvDataCopy, uIndex, usdignore);
-
+            if (sdFiltercheckBox.Checked == true)
+            {
+                if (double.TryParse(xsd.Text, out xsdignore)) RemoveOutliers(ref csvDataCopy, xIndex, xsdignore);
+                if (double.TryParse(ysd.Text, out ysdignore)) RemoveOutliers(ref csvDataCopy, xIndex, ysdignore);
+                if (double.TryParse(zsd.Text, out zsdignore)) RemoveOutliers(ref csvDataCopy, zIndex, zsdignore);
+                if (double.TryParse(usd.Text, out usdignore)) RemoveOutliers(ref csvDataCopy, uIndex, usdignore);
+            }
 
             //Iterate each time sample and add it to the appropriate x,y list
             int numberOfSamples = csvDataCopy.Length;
             double minZ = double.MaxValue;
-            double maxZ = double.MinValue;
             double range = 0.0;
             for (i = 0; i < numberOfSamples; i++)
             {
@@ -314,32 +307,6 @@ namespace DataAnalyser
                 cell[1] = u;
                 MainGridViewData[coordinates[0], coordinates[1]].Add(cell);
             }
-
-            //Calculate our max Z value
-            //for (i = 0; i < MainGridViewyValues.Length; i++)
-            //{
-            //    for (int j = 0; j < MainGridViewxValues.Length; j++)
-            //    {
-            //        //MainGridViewData[j, i] = RemoveOutliers(MainGridViewData[j, i], 3.0);
-
-            //        List<double[]> list = MainGridViewData[j, i];
-            //        double[] doubleArray = new double[list.Count];
-            //        for (int k = 0; k < doubleArray.Length; k++) doubleArray[k] = list[k][0];
-
-            //        if (doubleArray.Length != 0)
-            //        {
-            //            double average = doubleArray.Average();
-
-            //            if (HelperMethods.IsValidDouble(average))
-            //            {
-            //                if (average > maxZ) maxZ = average;
-            //                if (average < minZ) minZ = average;
-            //            }
-            //        }
-            //    }
-            //}
-
-            //range = maxZ - minZ;
 
             //Do not display cells with a count below this level
             double ignoreValue;
@@ -420,7 +387,9 @@ namespace DataAnalyser
             }
             average /= count;
 
-            double median = HelperMethods.Median(array);
+            array.Sort();
+            double median = array[array.Count / 2];
+
             double sumOfSquaresOfDifferences = array.Select(val => (val - average) * (val - average)).Sum();
             double standardDeviation = Math.Sqrt(sumOfSquaresOfDifferences / array.Count);
 
@@ -444,60 +413,6 @@ namespace DataAnalyser
 
             return removedEntries;
         }
-
-        ////Remove all outliers that are > 1 + Percentile or < 1 - percentile from the average
-        //public static List<double[]> RemoveOutliers(List<double[]> unconditionedData, double standardDeviationMultiple)
-        //{
-        //    //Firstly remove all NaN, Infinity, null variables
-        //    List<double[]> conditionedData = ConditionData(unconditionedData);
-        //    List<double[]> returnData = new List<double[]>();
-
-        //    //Split into two seperate arrays
-        //    List<double> array1 = new List<double>();
-        //    List<double> array2 = new List<double>();
-
-        //    for(int i = 0; i < unconditionedData.Count; i++)
-        //    {
-        //        array1.Add(unconditionedData[i][0]);
-        //        array2.Add(unconditionedData[i][1]);
-        //    }
-
-        //    if (array1.Count == 0 || array1.Count == 0) return conditionedData;
-
-        //    double median1 = HelperMethods.Median(array1);
-        //    double median2 = HelperMethods.Median(array2);
-
-        //    double average1 = array1.Average();
-        //    double average2 = array2.Average();
-
-        //    double sumOfSquaresOfDifferences1 = array1.Select(val => (val - average1) * (val - average1)).Sum();
-        //    double sumOfSquaresOfDifferences2 = array2.Select(val => (val - average2) * (val - average2)).Sum();
-
-        //    double standardDeviation1 = Math.Sqrt(sumOfSquaresOfDifferences1 / array1.Count);
-        //    double standardDeviation2 = Math.Sqrt(sumOfSquaresOfDifferences2 / array2.Count);
-
-        //    //Remove any value > or < standardDeviationMultiple*standardDeviation1 from the median
-        //    double upperLimit1 = (standardDeviationMultiple * standardDeviation1) + median1;
-        //    double lowerLimit1 = median1 - (standardDeviationMultiple * -standardDeviation1);
-
-        //    double upperLimit2 = (standardDeviationMultiple * standardDeviation2) + median2;
-        //    double lowerLimit2 = median2 - (standardDeviationMultiple * -standardDeviation2);
-
-        //    foreach (double[] value in unconditionedData)
-        //    {
-
-        //        if ((value[0] <= upperLimit1 && value[0] >= lowerLimit1) && (value[1] <= upperLimit2 && value[1] >= lowerLimit2))
-        //        {
-        //            returnData.Add(value);
-        //        }
-        //    }
-
-        //    return returnData;
-        //}
-
-  
-
-
 
         public int[] GetNearestCoordinate(double x, double y, double[] xVals, double[] yVals)
         {
@@ -692,23 +607,15 @@ namespace DataAnalyser
 
         private void checkPulseButton_Click(object sender, EventArgs e)
         {
-            int yIndex = 0;
-            int xIndex = 0;
-            foreach (DataGridViewRow row in MainGridView.Rows)
-            {
-                foreach (DataGridViewTuningCell cell in row.Cells)
-                {
-                    if (cell.Selected)
-                    {
-                        yIndex = cell.RowIndex;
-                        xIndex = cell.ColumnIndex;
-                        break;
-                    }
-                }
-            }
+
+            if (MainGridView.SelectedCells.Count <= 0) return;
+            int yIndex = MainGridView.SelectedCells[0].RowIndex;
+            int xIndex = MainGridView.SelectedCells[0].ColumnIndex;
+
 
             //Update the gridview with the new selection
             PopulateMainGridView(xAxisComboBox.Text, yAxisComboBox.Text, zAxisComboBox.Text, UComboBox.Text);
+
 
             foreach (DataGridViewRow row in MainGridView.Rows)
             {
